@@ -11,13 +11,13 @@ Our steps will be:
     1. Task: Describe the design informally in MIDA terms
     2. Task: Identify relevant literature and a model article
 2. Design
-   3. Task: Read one piece from relevant literature of at least 2 classmates 
-   1. Task: Formally "declare" the design, present the declaration
-   2. Task: Situate the contribution, present the contribution
+   1. Task: Read one piece from relevant literature of at least 2 classmates 
+   2. Task: Formally "declare" the design, present the declaration
+   3. Task: Situate the contribution, present the contribution
 3. Writing from inside out
    1. Task: *Before class*: Only if relevant for your project: register the design before implementing analysis. This is not relevant if you have already implemented analysis. 
-   1. Task: *Before class*: Share abstract, introduction, and paper outline, identifying any additional analyses
-   2. Task: *In class*: Present *Main Results*, table or figure
+   2. Task: *Before class*: Share abstract, introduction, and paper outline, identifying any additional analyses
+   3. Task: *In class*: Present *Main Results*, table or figure
 5. Draft 1 shared and discussed
    1. Task: *Before class*: Share draft 1
    2. Task: Read draft of at least 2 classmates 
