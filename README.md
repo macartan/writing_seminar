@@ -9,7 +9,7 @@ The assumption is that you do not need to do original data collection in this ti
 Our steps will be:
 
 1. Introduction
-  1. Task: Describe the design informally in MIDA terms
+    1. Task: Describe the design informally in MIDA terms
   2. Task: Identify relevant literature and a model article
 2. Design
   1. Task: Formally "declare" the design, present the declaration
