@@ -1,0 +1,115 @@
+---
+title: "Challenges"
+author: "Macartan Humphreys"
+date: Feb 2017
+numbersections: true
+header-includes:
+  - \usepackage{amsmath, amssymb, bbm, amstext, array, listings, mathtools, multicolumn, caption, color, graphics, ulem, caption, changepage, atbegshi, soul}
+  - \newcommand\E{\mathbb{E}}
+  - \newcommand\V{\mathbb{V}}
+  - \hypersetup{colorlinks=true,linkcolor=red}
+  - \usepackage{ulem}
+  - \pdfstringdefDisableCommands{\let\sout\relax}
+fontsize: 11pt  
+output:
+  beamer_presentation:
+    slide_level: 2
+    keep_tex: false
+    includes:
+      in_header: include_nav.txt
+  ioslides_presentation:
+    self_contained: yes
+    widescreen: no
+---
+
+
+
+
+# Endogeneous subgroups
+
+## Endogeneous Subgroups
+Experiments often give rise to endogenous subgroups. The potential outcomes framework can make it clear why this can cause problems.
+
+## Heterogeneous Effects with Endogeneous Categories
+\begin{itemize} 
+\item Problems arise in analyses of subgroups when the categories themselves are affected by treatment
+\item Example from our work:
+	\begin{itemize}
+		\item You want to know if an intervention affects reporting on violence against women
+		\item You measure the share of all subjects that experienced violence that file reports
+		\item The problem is that which subjects experienced violence is itself a function of treatment
+	\end{itemize}
+\end{itemize}
+
+
+## Heterogeneous Effects with Endogeneous Categories
+It is possible that in truth no one's reporting behavior has changed, what has changed is the propensity of people with different propensities to report to experience violence:
+	\begin{table} \scriptsize
+		\centering
+		\begin{tabular}{rcc|cc|cc}
+			
+			& \multicolumn{ 2}{c}{Violence(Treatment)} & \multicolumn{ 4}{c}{Reporting(Treatment, Violence)} \\
+			
+			&       V(0) &       V(1) &     R(0,1) &     R(1,1) &     R(0,0) &     R(1,0) \\ \hline
+			
+			Type 1 (reporter) &          1 &          1 &          1 &          1 &          0 &          0 \\
+			
+			Type 2 (non reporter) &          1 &          0 &          0 &          0 &          0 &          0 \\			
+		\end{tabular}  
+	\end{table}
+	
+Expected reporting given violence in control = Pr(Type 1)
+	
+Expected reporting given violence in treatment = 100%
+	
+\color{red} \textbf{Question}: What is the actual effect of treatment on the propensity to report violence? 
+
+
+
+## Heterogeneous Effects with Endogeneous Categories 
+
+It is possible that in truth no one's reporting behavior has changed, what has changed is the propensity of people with different propensities to report to experience violence:
+\begin{table}
+\centering
+\begin{tabular}{c|cc|cc|c}\scriptsize
+
+           & \multicolumn{ 2}{c}{Reporters} & \multicolumn{ 2}{c}{Non reporters} &            \\ \hline
+           & \multicolumn{ 2}{c}{Experience Violence} & \multicolumn{ 2}{c}{Experience Violence} &            \\ \hline \hline
+           &         No &        Yes &        No  &        Yes &  \% Report \\
+
+   Control &         25 &         {\color{red}25} &         25 &        {\color{red}25} &       {\color{red} $\frac{25}{25+25}$}= 50\% \\  
+   & & & & \\
+  Treatment &         25 &         {\color{red}25} &         50 &          {\color{red}0} &      {\color{red}$\frac{25}{25+0}$}=100\% \\ \hline
+
+\end{tabular}  
+\end{table}
+
+
+## Heterogeneous Effects with Endogeneous Categories
+
+This problem can arise as easily in seemingly simple field experiments. Example:
+
+\begin{itemize}
+  \item In one study we provided constituents with information about performance of politicians
+  \item we told politicians in advance so that they could take action
+  \item we wanted to see whether voters punished poorly performing politicians
+  \item what's the problem?
+\end{itemize}
+
+
+
+## Heterogeneous Effects with Endogeneous Categories
+
+In such cases you can:
+
+\begin{itemize}
+\item Examine the joint distribution of multiple outcomes
+\item Condition on pretreatment features only
+\item Engage in mediation analysis
+\end{itemize}
+
+
+
+
+
+

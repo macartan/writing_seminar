@@ -1,0 +1,150 @@
+---
+title: "Merging"
+date: "1/31/2022"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(knitr)
+```
+
+Here we have three data datasets and we merge the second and third into the first. Note that the first dataset has *two* sets of IDs (name and code). One of these is used to help merge with `df_2` and the other  with `df_3`.
+
+# Basic merging
+
+```{r}
+df_1 <- data.frame(name = LETTERS[1:4], code = 1:4, X = runif(4))
+
+df_2 <- data.frame(name = c("A", "B", "D"), var_2 = runif(3))
+
+df_3 <- data.frame(code = 1:3, var_3= c("a", "v", "w"))
+
+df <- df_1 %>% left_join(df_2) %>% left_join(df_3)
+
+df %>% kable()
+```
+
+
+# WDI
+
+Here is an example in which we extract a variable from WDI and then merge in 
+region information.
+
+```{r}
+
+library(WDI)
+
+
+# GDP data
+df <- WDI::WDI(start = 1992, end = 1993)
+
+head(df)
+
+# Lets add in region and iso3c
+
+# We make a codes dataset
+country_codes <- WDI::WDI_data$country %>% data.frame() %>% 
+  dplyr::select(iso2c,  iso3c, region)
+
+head(country_codes)
+
+
+# Merge in
+df <- df %>% left_join(country_codes)
+
+head(df)
+
+# Lets get rid of the aggregates because Africa is not a country
+df <- df %>% filter(region != "Aggregates")
+head(df)
+
+```
+
+
+
+# Issues
+
+Merging is in principle easy but in practice pretty hard. 
+
+Key challenges:
+
+## Different naming 
+
+Merging will not work if you have different codes in teh datasets you are merging:
+
+```{r}
+df_1 <- data.frame(id = c("Germany", "U.K.", "Zaire"), X1 = 1:3)
+df_2 <- data.frame(id = c("Germany", "UK", "DRC"), X2 = 5:7)
+
+left_join(df_1, df_2)
+```
+
+We end up with missing data in X2 because the right ids were not found in the two datasets.
+
+Better:
+
+```{r}
+df_1 %>% left_join(df_2)
+
+df_1 %>% mutate(id = recode(id, "U.K." = "UK", "Zaire" = "DRC")) %>%
+  left_join(df_2)
+```
+
+Best: have one dataset that has a complete list of authorative codes --- hopefully a very standard set of codes. Prep all other data so that they have the same coding system.  
+
+## Incomplete data produces many holes
+
+
+```{r}
+df_1 <- data.frame(id = c("Germany"), X1 = 1)
+df_2 <- data.frame(id = c("DRC"), X2 = 2)
+
+left_join(df_1, df_2)
+```
+
+Better:
+
+
+```{r}
+df_0 <- data.frame(id = c("DRC", "Germany"))
+
+df_0 %>% left_join(df_1) %>% left_join(df_2)
+```
+
+again: start off with a complete frame, with all countries, and add into this.
+
+
+## Data is the wrong shape
+
+Very often you want to combine two datasets but they have different shapes. Viz:
+
+```{r}
+
+df_1 <- data.frame(id = c("France", "Germany"), GDP_1990 = runif(2), GDP_1995 = runif(2))
+df_1
+
+df_2 <- data.frame(id = c("France", "France", "Germany", "Germany"), 
+                   Year = c(1990, 1995, 1990, 1995),
+                   inflation = runif(4))
+df_2
+
+
+```
+
+we need to get these two into the  same shape in order to merge. I use `gather` here but there are many other reshape functions that might be better for your data.
+
+
+```{r}
+df_1 <- 
+  df_1 %>% gather("Year", "GDP",  -id) %>%
+  mutate(Year = gsub("GDP_", "", Year),
+         Year = as.numeric(Year))
+
+df_1 %>% left_join(df_2)
+```
+
+Notice that the joining was done on both id and Year since both of these were in the two datasets.

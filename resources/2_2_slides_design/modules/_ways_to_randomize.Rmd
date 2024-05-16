@@ -1,0 +1,70 @@
+---
+title: "Ways to randomize"
+author: "Macartan Humphreys"
+date: Feb 2017
+numbersections: true
+header-includes:
+  - \usepackage{amsmath, amssymb, bbm, amstext, array, listings, mathtools, multicolumn, caption, color, graphics, ulem, caption, changepage, atbegshi, soul, xcolor}
+  - \newcommand\E{\mathbb{E}}
+  - \newcommand\V{\mathbb{V}}
+  - \hypersetup{colorlinks=true,linkcolor=red}
+  - \usepackage{ulem}
+  - \pdfstringdefDisableCommands{\let\sout\relax}
+fontsize: 11pt  
+output:
+  beamer_presentation:
+    slide_level: 2
+    keep_tex: false
+    includes:
+      in_header: include_nav.txt
+  ioslides_presentation:
+    self_contained: yes
+    widescreen: no
+---
+
+
+## Randomization: Ways to randomize
+
+Principles:
+
+1. Do it with a **computer** when possible---Stata, R, other (e.g. in R use `randomizr`)
+2. Do it with a **seed** so that it is replicable
+3. Do it **many times** to generate a matrix of possible allocations---these are useful for inference
+
+
+Example:
+
+```{r, echo = TRUE}
+library(randomizr)
+set.seed(1); complete_ra(10)
+set.seed(1); complete_ra(10)
+```
+
+
+## Randomization: Ways to randomize
+
+1. The type of randomization you use can improve or hurt **statistical power.** 
+    * **Blocking** improves power. 
+    * **Clustering** reduces it. We discuss below.
+2. Randomization can be used to help assess **spillovers.** 
+    * **Saturation** designs  vary how dense a treatment is in different areas.
+3. Randomization can be done in ways that help address **ethical** issue.
+    * You can **guarantee** shares in treatment in  different groups.  
+    * You can provide **higher probabilities** of treatment for groups with greater need.
+    * **Public** and **private** randomizations
+    
+
+## Randomization (alone) does not justify answers to "causes of effects" questions
+
+* We might be able to say that we think that the effect of a treatment on a given outcome is 1/3
+* But that does not justify claiming that the probability that the outcome is due to the treatment is 1/3
+
+
+Here is the logic:
+
+* Say  I know that (binary) $X$ increases $Y$ from $\frac{1}{3}$ to $\frac{2}{3}$ on average. 
+* Say I observe  $Y=1$. What are the chances it is due to $X$?
+    *  One possibility is that $X$ has a positive effect for 2/3 of cases and a negative effect for 1/3 of cases. In that case whenever $X=Y=1$ this is due to X.
+    * Another is that $X$ never has a negative effect and it has a positive effect for 1/3 of cases and no effect on the rest. Then there's a 50% chance that $Y=1$ is due to $X=1$ (why 50%?)
+
+

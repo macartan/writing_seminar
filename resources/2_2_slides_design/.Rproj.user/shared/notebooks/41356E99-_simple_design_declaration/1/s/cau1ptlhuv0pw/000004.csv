@@ -1,0 +1,5 @@
+"0","diagnosis <- read_rds(""../code/diagnosis.rds"")
+"
+"2","Error in read_rds(""../code/diagnosis.rds"") : 
+  could not find function ""read_rds""
+"

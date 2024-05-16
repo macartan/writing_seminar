@@ -1,0 +1,59 @@
+---
+title: "export table to Word"
+author: "Macartan"
+date: "3/12/2021"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(flextable)
+library(knitr)
+library(jtools)
+library(huxtable)
+
+knitr::opts_chunk$set(echo=TRUE, warning = FALSE)
+```
+
+This Word document is made by compiling an .Rmd document to Word. The key thing to show here is that you can take your model output and generate nicely formatted tables in word  quickly. 
+
+# Analysis
+
+We make some models like this:
+
+```{r,  header = FALSE, message = FALSE}
+
+data <- data.frame(Y = rnorm(10), X = runif(10))
+
+model_1 <- lm(Y~1, data = data)
+model_2 <- lm(Y~X, data = data)
+```
+
+
+# Table Results
+
+We then export like this:
+
+```{r, message= FALSE}
+my_table <- export_summs(model_1, model_2)
+
+my_table
+                            
+```
+
+The functions used to make the table has various options to let you customize the table.  
+
+
+# A figure
+
+Similarly we can export our figures to Word
+
+```{r, fig.cap = "A nice figure"}
+
+with(data, plot(X, Y))
+```
+
+

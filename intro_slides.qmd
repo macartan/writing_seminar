@@ -1,0 +1,443 @@
+---
+title: "Writing Seminar: Orientation"
+subtitle: "May 2024"
+author: Macartan Humphreys
+format: 
+   revealjs:
+    embed-resources: true
+    theme: serif
+    slide-level: 3
+    slide-number: true
+    toc-depth: 2
+    show-slide-number: all
+    preview-links: auto
+    number-sections: true
+    link-color: orange
+bibliography: assets/bib.bib
+---
+
+
+# Today
+
+```{r, message = FALSE, echo = FALSE}
+library(DeclareDesign)
+library(DesignLibrary)
+library(knitr)
+library(tidyverse)
+library(kableExtra)
+library(CausalQueries)
+run <- FALSE
+```
+
+
+1. Intros
+2. Lecture
+3. Individual work
+4. Discussion
+5. Perhaps: DD deeper dive
+
+# Lecture outline
+
+* General aims and structure
+* Expectations
+* Pointers for coding
+* Topics / refreshers
+  * Papers: structures and processes
+  * DAGs, variables, identification strategies
+  * Designs and design diagnosis
+
+
+## Aims
+
+* Write a paper
+* Follow open science principles
+
+
+## Expectations {.smaller}
+
+
+1. Introduction (today!)
+    1. Task: Describe the design informally in MIDA terms
+    2. Task: Identify relevant literature and a model article
+2. Design
+   1. Task: Read one piece from relevant literature of at least 2 classmates 
+   2. Task: Formally "declare" the design, present the declaration
+   3. Task: Situate the contribution, present the contribution
+3. Writing from inside out
+   1. Task: *Before class*: Only if relevant for your project: register the design before implementing analysis. This is not relevant if you have already implemented analysis. 
+   2. Task: *Before class*: Share abstract, introduction, and paper outline, identifying any additional analyses
+   3. Task: *In class*: Present *Main Results*, table or figure
+
+## Expectations {.smaller}
+
+4. Draft 1 shared and discussed
+   1. Task: *Before class*: Share draft 1
+   2. Task: Read draft of at least 2 classmates 
+5. Final class presentations (Date TBD)
+   1. Task: Incorporate comments, complete a draft
+   2. Task: Present in class using slides   
+
+
+## Some readings {.smaller}
+
+Useful references on design and structuring research. @blair2023research, @king2021designing, @lipson2018write, @van1997guide
+
+Writing. People quibble but there is a lot of wisdom in @strunk2007elements:
+
+
+
+
+## Full refs
+
+```{r, echo=FALSE, results='asis'}
+library(RefManageR)
+bib <- ReadBib("assets/bib.bib")
+
+bib[c("blair2023research", "king2021designing", "lipson2018write", "van1997guide", "strunk2007elements")]
+
+```
+
+# Topics 1:  Papers
+
+## Classic paper structure
+
+https://macartan.github.io/teaching/how-to-write
+
+Classic structure
+
+1. Motivation
+2. Theory
+3. Strategy (perhaps descriptives here)
+4. Main results
+5. Disucission / deepening
+6. Conclusion
+
+## Classic paper stages {.smaller}
+
+1. Come up with a question
+2. Come up with an answer strategy, find a data source
+3. Develop the design
+4. Present the design, modify as needed
+5. Register the design
+6. Get ethics approval if needed
+6. Implement data strategy
+7. Implement answer strategy; generate replication material in parallel
+8. Generate slides and present to colleagues
+9. Submit
+
+
+
+
+
+# Models: Arguments as DAGs 
+
+```{r child="resources/modules/_an_argument.Rmd", echo=FALSE}
+```
+   
+
+
+
+# Design declaration and diagnosis
+
+[book](https://book.declaredesign.org/): [https://book.declaredesign.org/](https://book.declaredesign.org/)
+
+## The MIDA Framework
+
+Four elements of any research design:
+
+- **Model**: set of models of what causes what and how
+- **Inquiry**: a question stated in terms of the model
+- **Data strategy**: the set of procedures we use to gather information from the world (sampling, assignment, measurement)
+- **Answer strategy**: how we summarize the data produced by the data strategy
+
+## Four elements of any research design
+
+```{r midaplot, echo = FALSE}
+knitr::include_graphics("assets/midadag.svg")
+```
+
+
+## Examples of MIDA elements
+
+* `M`: DAGs, game theoretic models
+* `I`: ATEs, CATEs, COEs, models
+* `D`: Sampling schemes, assignment schemes, text analysis, interview
+* `A`: Experiment, observational, quantitative, qualitative:
+   * Conditioning on observables
+   * Difference in differences
+   * RDD
+   * Instrumental variables
+
+
+## Declaration, Diagnosis, Redesign cycle
+
+
+* **Declaration**: Telling the computer what M, I, D, and A are.
+
+* **Diagnosis**: Estimating "diagnosands" like power, bias, rmse, error rates, ethical harm, amount learned.
+
+* **Redesign** : Fine-tuning features of the data and answer strategies to understand how they change the diagnosands
+
+* Different sample sizes
+* Different randomization procedures
+* Different estimation strategies
+* Implementation: effort into compliance versus more effort into sample size
+
+
+
+## In code: Key commands for making a design {.smaller}
+
+* `declare_model()`
+* `declare_inquiry()`
+* `declare_assignment()`
+* `declare_measurement()`
+* `declare_inquiry`
+* `declare_estimator()`
+
+and there are more `declare_` functions!
+
+## In code:  Key commands for using a design  {.smaller}
+
+* `draw_data(design)`
+* `draw_estimands(design)`
+* `draw_estimates(design)`
+* `get_estimates(design, data)`
+* `run_design(design)`, `simulate_design(design)`
+* `diagnose_design(design)`
+* `redesign(design, N = 200)`
+* `design |> redesign(N = c(200, 400)) |>` 
+     `diagnose_designs()` 
+* `compare_designs()`, `compare_diagnoses()`
+
+## Cheat sheet
+
+<font size="3">https://raw.githubusercontent.com/rstudio/cheatsheets/master/declaredesign.pdf</font>
+
+
+```{r, echo = FALSE}
+knitr::include_graphics("assets/cheat_sheet.png") 
+```
+
+## A simple design
+
+```{r, comment = "", echo = TRUE}
+
+N <- 100
+b <- .5
+
+design <- 
+  declare_model(N = N, U = rnorm(N), 
+                potential_outcomes(Y ~ b * Z + U)) + 
+  declare_assignment(Z = simple_ra(N), Y = reveal_outcomes(Y ~ Z)) + 
+  declare_inquiry(ate = mean(Y_Z_1 - Y_Z_0)) + 
+  declare_estimator(Y ~ Z, inquiry = "ate", .method = lm_robust)
+
+```
+
+You now have a two arm design object in memory!
+
+If you just type `design` it will *run* the design---a good check to make sure the design has been declared properly.
+
+
+## Make data from the design
+
+```{r, echo = TRUE}
+data <- draw_data(design)
+
+data |> head () |> kable()
+```
+
+
+## Draw estimands
+
+
+```{r, comment = "", echo = TRUE}
+
+draw_estimands(design) |>
+  kable(digits = 2)
+
+```
+
+## Draw estimates
+
+
+```{r, comment = "", echo = TRUE}
+
+draw_estimates(design) |> 
+  kable(digits = 2) 
+
+```
+
+
+## Get estimates
+
+```{r, comment = "", echo = TRUE}
+
+get_estimates(design, data) |>
+  kable(digits = 2)
+
+```
+
+## Simulate design
+
+```{r, comment = "", warning = FALSE, echo = TRUE}
+
+simulate_design(design, sims = 3) |>
+  kable(digits = 2)
+
+```
+
+## Diagnose design
+
+```{r, eval = FALSE, message = FALSE, echo = TRUE}
+
+design |> 
+  diagnose_design(sims = 100) 
+
+```
+```{r, echo = FALSE, message = FALSE}
+
+design |> 
+  diagnose_design(sims = 100) |>
+  reshape_diagnosis() |>
+  select("Mean Estimate", "Bias", "SD Estimate", "RMSE", "Power", "Coverage" ) |>
+  kable(digits = 2) 
+
+```
+
+## Redesign
+
+```{r, comment = "", message = FALSE, echo = TRUE}
+
+new_design <-
+  
+  design |> redesign(b = 0)
+
+```
+
+* Modify any arguments that are explicitly called on by design steps.
+* Or add, remove, or replace steps
+
+
+## Compare designs
+
+```{r, eval = FALSE, echo = TRUE}
+redesign(design, N = 50) %>%
+  
+  compare_diagnoses(design) 
+
+```
+
+
+```{r, echo = FALSE}
+if(run)
+redesign(design, N = 50) %>%
+  compare_diagnoses(design)  %>%
+  write_rds("saved/compare_diagnoses.rds")
+
+  read_rds("saved/compare_diagnoses.rds")$compared_diagnoses_df |>
+    select(-design_1, -design_2, -inquiry, -estimator, -term, -se_1, -se_2, -se_difference,
+           -sims, -bootstrap_sims) |>
+    kable(digits = 2)
+
+```
+
+
+
+
+
+# Topics 3: Workflow
+
+
+## Principles {.smaller}
+
+* Always work from a folder where your work automatically backs up.
+
+   * Dropbox, Drive, many others
+
+* Have analysis files integrated with writing files
+
+   * `qmd`, `Rmd` fabulous for this
+   * Set it up so that you can quickly do reality checks on data and analysis
+  
+* Be able to replicate all data work and analysis with one click
+
+* Outsource formatting. 
+
+   * e.g. `tex`, `.qmd`,  `.Rmd` automatically format. If you use Word, use their "Styles"
+   * Bibliographies: use bibtex or similar. Keep a file and reference like this `@putnam2000bowling` (in Rmd) which produces @putnam2000bowling and handles the formatting. Other tools work similarly. Don't do this by hand.
+  
+##  Folders and files.
+
+* Have all files: writing, files, data files, additional analysis files or images, etc in a single directory with relative references
+
+  * Number your folders. 
+  * Have few files in each folder.
+  * I often label files with date: `20201005_paper.Rmd`
+  * Compile regularly and have a readable compiled file beside your work file
+  * Keep your main document clean
+  * Have an archive folder `0_archive` and backup old copies regularly (not so important if you have good versioning)
+  
+## Examples
+
+See examples in `sample_project`
+
+## Tasks 
+
+* Keep a to do list
+* If you use github it is great to use "issues" to keep track of to dos
+* Try to complete well defined tasks in one sitting. Work in chunk.
+* If you have a repetitive task there is probably a way to automate it: ask for help
+* If you have a conceptually hard task that you are not making progress on, stop, move away, and try it from a whole new angle
+* Order your tasks: figure out whether you work better linearly or doing parallel work. 
+* Cross off tasks when done
+* Don't be afraid to discard work
+* Be ambitious but don't let the best be the enemy of the good.
+
+
+
+# Pointers for coding
+
+You should generate your replication files at the same time as your analysis
+
+
+## How to: Replication files
+
+* Best in self-contained documents for easy third party viewing. e.g. `.html` via `.qmd` or `.Rmd`
+
+Some examples:
+
+* [https://macartan.github.io/projects/replications/](https://macartan.github.io/projects/replications/)
+* [https://wzb-ipi.github.io/vaccine_freedoms/](https://wzb-ipi.github.io/vaccine_freedoms/)
+
+
+## Good coding rules 
+
+* [https://bookdown.org/content/d1e53ac9-28ce-472f-bc2c-f499f18264a3/code.html](https://bookdown.org/content/d1e53ac9-28ce-472f-bc2c-f499f18264a3/code.html)
+* [https://www.r-bloggers.com/2018/09/r-code-best-practices/](https://www.r-bloggers.com/2018/09/r-code-best-practices/)
+
+## Good coding rules 
+
+* Metadata first
+* Call packages at the beginning: use `pacman` 
+* Put options at the top
+* Call all data files once, at the top. Best to call directly from a public archive, when possible.  
+* Use functions and define them at the top: comment them; useful sometimes to illustrate what they do
+* Replicate first, re-analyze second. Use sections.
+* Have subsections named after specific tables, figures or analyses
+
+
+
+## Aim
+
+Nothing local, everything relative: so please do not include hardcoded paths to your computer
+
+* First best: if someone has access to your `.Rmd`/`.qmd` file they can hit render or compile and the whole thing reproduces first time.
+
+*  But: often you need ancillary files for data and code. That's OK but aims should still be that with a self contained folder someone can open a `master.Rmd` file, hit compile and get everything. I usually have an `input` and an `output` subfolder.
+
+
+Resources and ideas from the [institute for replication](https://i4replication.org/reproducibility.html) [https://i4replication.org/reproducibility.html](https://i4replication.org/reproducibility.html)
+
+
+# References

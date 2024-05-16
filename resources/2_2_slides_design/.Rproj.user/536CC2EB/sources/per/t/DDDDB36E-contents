@@ -1,0 +1,89 @@
+---
+title: "Causal inference and experimental methods"
+author: "Macartan Humphreys"
+numbersections: true
+header-includes:
+  - \usepackage{amsmath, amssymb, bbm, amstext, array, listings, mathtools, multicolumn, caption, color, graphics, ulem, caption, changepage, atbegshi, soul, xcolor}
+  - \newcommand\E{\mathbb{E}}
+  - \newcommand\V{\mathbb{V}}
+  - \hypersetup{colorlinks=true,linkcolor=red}
+  - \usepackage{ulem}
+  - \pdfstringdefDisableCommands{\let\sout\relax}
+fontsize: 11pt  
+output:
+  beamer_presentation:
+    slide_level: 2
+    keep_tex: false
+    includes:
+      in_header: include_nav.txt
+  ioslides_presentation:
+    self_contained: yes
+    widescreen: no
+---
+
+## Benchmark: randomization
+
+Recap of inference with an RCT
+
+* We want to estimate: $$\frac1n\sum_i((Y_i(1)) - Y_i(0))$$
+
+* We estimate using: $$\frac1{n_t}\sum_{i \in T}Y_i - \frac1{n_c}\sum_{i \in C}Y_i$$
+
+* This works because, with randomization $\frac1{n_t}\sum_{i \in T}Y_i =  \frac1n\sum_i((Y_i(1))$ *in expectation* -- that is, on average the sample average is the population average. Similarly $\frac1{n_c}\sum_{i \in C}Y_i =  \frac1n\sum_i((Y_i(0))$ *in expectation*.
+
+## Benchmark: randomization
+
+Difficulties though once sampling is related to potential outcomes.
+
+## In the absence of randomization a model is *required* 
+
+* Randomization is **not required** for causal inference.
+
+* But without it you need some alternative argument for why your estimates from the treatment group capture *what would occur in the control group* if they were treated (and vice versa)
+
+
+* What's more you will need a **model**:
+
+    * Some variables might *have* to be taken into account in order to ensure no confounding
+    * Some variables might *have* to *not* be taken into account in order to ensure no confounding
+    * Sometimes these might be the same variables!   
+    
+
+## In the absence of randomization a model is *required* 
+
+This is shown by Pearl (1995):
+
+```{r, echo = FALSE, fig.width = 5, fig.height = 3,  fig.align="center", out.width='.9\\textwidth'}
+source("hj_dag.R")
+par(mar=c(1,1,1,1))
+hj_dag(x = c(-1, 0, -1, 1, 3),
+       y = c(0, 2, 4, 1, 2),
+       names = c( expression(paste(U[2])),
+         "Z", expression(paste(U[1])), "X", "Y" ),
+       arcs = cbind( c(1, 3, 1, 3, 4, 2),
+                     c(2, 2, 4, 5, 5, 4)),
+       title = "Z is a confound but controlling for it can induce bias",
+       padding = .4, contraction = .15) 
+
+```
+
+
+## Alternatives
+
+Randomization provides a very useful benchmark. Other strategies seek to approximate the magic of randomization:
+
+* **Experimental Control** seeks to ensure that *ceteris* is *paribus* (induced unit homogeneity)
+* **Instrumental variables** or **Natural experiments**---seeks a shock that approximates randomization. 
+* **Difference in differences**---assumes that once you account for common time trends cases are as-if randomized
+* **Regression discontinuity**---assumes that cases are as-if randomized *around a threshold* (there are also motivations for RDD that do not assume as-if randomization) 
+
+
+
+
+4. Before / after comparisons
+
+5. Controlling: Regression,  Matching and Weighting
+
+6. Synthetic Matching
+
+

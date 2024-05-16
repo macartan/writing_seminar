@@ -1,0 +1,163 @@
+---
+title: "Intro to R (Honors Seminar 2020)"
+author: "Elena Barham"
+date: "9/30/2020"
+output: pdf_document 
+---
+```{r setup, include = FALSE}
+# The hashtag makes a comment and R will not read it as a command 
+rm(list = ls()) # This command clears the R environment. Mostly it is useful prior to starting a new session. 
+## Setting a working directory 
+setwd("~/Dropbox/Honors_2021/1 Resources and Readings/Materials - Monday October 1") # This is the direction for our class resources today 
+
+knitr::opts_chunk$set(echo = TRUE) # Changes the default settings of different chunks of code in our R Markdown file. 
+```
+
+# Load Packages 
+
+```{r setup, include=FALSE}
+### General use packages 
+install.packages("tidyverse") # This package is actually a suite of packages 
+library(tidyverse)
+
+### Packages for spatial data 
+install.packages("raster") # Reading, writing, and manipulating raster form spatial data 
+install.packages("rgdal") # Provides access to spatial projection operations 
+install.packages("GISTools") # Choropleth plots and aggregation of point data to polygons 
+install.packages("rgeos") # Operations with spatial data (i.e. intersection, length of spatial forms)
+install.packages("maptools") # More tools for manipulating geographic data 
+library(raster)
+library(rgdal)
+library(GISTools)
+library(rgeos)
+library(maptools) 
+
+# Note that you first need to install packages and then save them to your library. Once you have installed them once you then just need to add them to the library for new sessions. 
+```
+
+## Learning Some Basic Commands
+```{r basic commands, include = FALSE}
+x <- 3 #this assigns an object
+x == 3 #this is a logical question 
+
+y <- "ABC" #this assigns a character string 
+
+x <- c(3,4,5,6) #this is a numeric vector
+m <- c("panda", "octopus", "squirrel", "moose") #this is a character vector 
+
+panda <- c(x,m) # this combines x and m into one vector
+panda <- rbind(x,m) # this binds x and m into a matrix by rows
+panda <- cbind(x,m) # this binds x and m into a matrix by columns 
+
+panda <- as.data.frame(panda) # this makes y into a data frame 
+
+a <- panda[,1] # this subsets y into the first column 
+b <- panda[1,] # this subsets y into the first row 
+
+```
+
+
+## Loading and merging data - PANEL 
+
+```{r load conservation data, include = FALSE}
+# Load panel data 
+mexico <- read.csv("mexico.csv")
+
+# Make sure our data is there
+View(mexico)  # The 'View' function brings up the panel data
+
+# Load a stata file
+library(haven)
+elections <- read_dta("mex_elections.dta")
+# Citing this data: Blackman, Allen; Villalobos, Laura, 2020, "Replication data for Use Forests or Lose Them? Regulated Timber Extraction and Tree Cover Loss in Mexico", https://doi.org/10.7910/DVN/NPUCWT, Harvard Dataverse, V1, UNF:6:ziy566ZTxSlzbBPEvBz+Nw== [fileUNF]
+
+### Merging ###    
+
+#### Basic Cleaning Techniques ### 
+mexico$X <- NULL # Delete extraneous columns  
+mexico[is.na(mexico$GIS_AREA)] <- 0 # This sets NA observations of the variable attacks to '0' 
+mexico <- mexico[!is.na(mexico$GOV_TYPE),] # This drops NA observations of the specified variable 
+
+## Merging 
+merged <- merge(mexico, elections, by = "estado", all.x = TRUE) #
+
+```
+
+
+## Loading and merging data -- Spatial
+```{r pressure, include = FALSE}
+# Load spatial data 
+mex_shp <- readOGR(dsn = "mex_shp",
+                 layer = "MEX_adm2") 
+
+mex_pa_shp <-  readOGR(dsn = "mex_PAs_shp",
+                 layer = "areas") 
+
+# Subsetting Data 
+federal_PAs <- subset(mex_pa_shp, gv_cl == "federal")
+
+# Make sure our data is there 
+plot(mex_shp) # The 'plot' function lets you look at version of the shape file with no attributes
+head(mex_shp, 5) # The 'head' function lets you quickly look at the variables in a shape file 
+
+```
+
+
+## Data Exploration 
+```{r pressure, echo=FALSE}
+summary(merged$GIS_AREA) # Gives summary of the variable 
+
+table(merged$gov_clean) # Gives a frequency table of the variable
+
+table(merged$STATUS_YR, merged$gov_clean) # Gives a two-way table of the variables 
+ 
+```
+
+## Data Visualization - Graphs!  
+```{r pressure, echo=FALSE} 
+
+ggplot(data=merged, aes(x=STATUS_YR, y=GIS_AREA, group=1)) +
+  geom_line(color = "red") +
+  labs(title = "Mexico: Annual Land Conserved")
+
+```
+
+
+## Data Visualization - Spatial 
+
+```{r pressure, echo=FALSE}
+install.packages("sp") # Load sp package for spatial visualization tools 
+library(sp) # Save sp to library
+
+mex_shp <- spTransform(mex_shp, CRS("+proj=longlat +datum=WGS84 +no_defs")) # Project 
+mex_pa_shp <- spTransform(mex_pa_shp, CRS("+proj=longlat +datum=WGS84 +no_defs")) # Project 
+
+#Make a map! 
+plot(mex_shp, col='light gray', border='gray')
+plot(subset(mex_pa_shp, gv_cl == "private"), add=TRUE, col="purple", border = "purple")
+
+ 
+```
+
+##  Regression and Displaying Results 
+
+```{r pressure, echo=FALSE}
+# Basic Regression - these are nonsense specifications but will help you understand the form of how to specify a regression in r 
+x_1 <- lm(federal ~ participation, data = merged)  
+summary(x_1)
+# Fixed Effects 
+x_2 <- lm(federal ~ participation + as.factor(STATUS_YR), data = merged)
+summary(x_2)
+
+# Interaction Effects 
+x_3 <- lm(federal ~ participation*povertyt1 + as.factor(STATUS_YR), data = merged)
+summary(x_3)
+
+install.packages("stargazer") # Provides formatted tables for text 
+library(stargazer)
+
+stargazer(x_1, x_2, x_3, omit = "STATUS_YR", 
+          add.lines = list(c("Fixed effects?", "No", "Yes", "Yes"))) # This produces a table that can be typeset in LaTeX. 
+
+```
+

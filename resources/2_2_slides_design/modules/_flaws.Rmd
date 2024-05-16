@@ -1,0 +1,201 @@
+---
+title: "Flaws"
+author: "Macartan Humphreys"
+date: Feb 2017
+numbersections: true
+header-includes:
+  - \usepackage{amsmath, amssymb, bbm, amstext, array, listings, mathtools, multicolumn, caption, color, graphics, ulem, caption, changepage, atbegshi, soul}
+  - \newcommand\E{\mathbb{E}}
+  - \newcommand\V{\mathbb{V}}
+  - \hypersetup{colorlinks=true,linkcolor=red}
+  - \usepackage{ulem}
+  - \pdfstringdefDisableCommands{\let\sout\relax}
+fontsize: 11pt  
+output:
+  beamer_presentation:
+    slide_level: 2
+    keep_tex: true
+    includes:
+      in_header: include_nav.txt
+  ioslides_presentation:
+    self_contained: yes
+    widescreen: no
+---
+  
+```{r, echo=FALSE, warnings = FALSE, message = FALSE, include = FALSE}
+rm(list = ls())
+set.seed(343)
+suppressMessages({
+  library(DeclareDesign)
+  library(xtable)
+  library(knitr)
+  library(sandwich)
+  library(lmtest)
+  library(ggplot2)
+  library(dplyr)
+  library(knitr)
+  library(randomizr)
+
+})
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, error = TRUE, message = FALSE, 
+                      eval = TRUE, tidy = FALSE, tidy.opts = list(width.cutoff = 50),
+                      strip_white = FALSE, results = 'asis', fix.ext = 'pdf', cache = FALSE)
+
+library(randomizr)
+```
+
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r, echo = FALSE}
+g <- function(
+                           n = 100, 
+                           block_effect = 0, 
+                           xl = c(-2,2), 
+                           sigma_0 = .25, 
+                           sigma_1 = .25, 
+                           prob = .5,
+                           n_blocks  = 1,
+                           n_clusters = n,
+                           confound = FALSE,
+                           seed = 1){
+
+  set.seed(1)
+  
+  u <- (1:n)/n
+  
+  block_var   <- rep(1:n_blocks, each = n/n_blocks)
+  clust_var    <- rep(1:n_clusters, each = n/n_clusters)
+  ra <- function() block_and_cluster_ra(prob = prob, block_var = block_var, clust_var = clust_var)
+
+  if(confound) ra <- function() block_ra(block_var = 1:n, block_prob = seq(.01, .99, length = n))  
+  
+  Y0 <- sigma_0*rnorm(n) 
+  Y1 <- sigma_1*rnorm(n) + block_effect*u
+ 
+  par(mfrow = c(2,3))
+  
+    plot(1:n, Y0, col = "orange", ylim = c(min(Y0,Y1), max(Y0, Y1)), pch = 16, ylab = "Y0, Y1", xlab = "Potential Confound")
+    points(1:n, Y1, col = "red", pch = 16)
+    abline(a = mean(Y1), b=0, col = "red")
+    abline(a = mean(Y0), b=0, col = "orange")
+#    hist(Y0, xlim = xl)
+#    hist(Y1, xlim = xl)
+    hist(Y1 - Y0, , xlim = xl)
+    abline(v = mean(Y1-Y0), col = "red")
+    
+    frame()
+    
+    Z <- ra()
+    
+    Y <- Y1*(Z==1) + Y0*(Z==0)
+    plot((1:n)[Z==0], Y0[Z==0], col = "orange", ylim = c(min(Y0,Y1), max(Y0, Y1)), pch = 16, , ylab = "Y0, Y1 | Z", xlab = "Potential Confound")
+    if(n_blocks > 1)    for(j in 1:n_blocks) abline(v = .75*(1/n)+j*(n/n_blocks))
+    if(n_clusters < n ) for(j in 1:n_clusters) abline(v = .5*(1/n)+j*(n/n_clusters))
+    points((1:n)[Z==1], Y1[Z==1], col = "red", pch = 16)
+    abline(a = mean(Y1[Z==1]), b=0, col = "red")
+    abline(a = mean(Y0[Z==0]), b=0, col = "orange")
+
+ #   hist(Y0[Z==0], , xlim = xl)
+ #   hist(Y1[Z==1], , xlim = xl)
+    
+    m <- coef(summary(lm(Y~Z)))[2,1]
+    se <- coef(summary(lm(Y~Z)))[2,2]
+    x <- seq(-3, 3, .01)
+    
+    plot(x, dnorm(x, m, se), type = "l", main = "Estimate", xlim = xl)
+    abline(v = m, col = "red")
+    
+     sims = 1000
+     Zs <- replicate(sims, ra())
+     sampling_distribution <- apply(Zs, 2, function(Z) mean(Y1[Z==1]) - mean(Y0[Z==0]))
+     hist(sampling_distribution, xlim = xl, main = "Sampling distribution")
+}
+
+n = 5*12
+```
+
+## Sampling variability and power
+
+* Recall: "power" is the probability that we will be able to reject a null hypothesis
+
+* Our goal now is to think about power considerations by thinking about the *variance of the sampling distribution of the estimate* --- what is the range of estimates we might get given our design?
+
+* The tighter this distribution, in general, the better is our power
+  
+* There seems to be a strong tendancy for studies to overestimate power
+
+## Sampling variability and power
+
+```{r, echo = FALSE}
+g(n = n, b = 2, prob = .5)
+```
+
+## Power makes little sense when estimates are biased
+
+```{r, echo = FALSE}
+g(n = n, b = 2, prob = .5, confound = TRUE)
+```
+
+
+## Sampling variability and power (Base, middling $n$)
+
+```{r, echo = FALSE}
+g(n = n, b = 2, prob = .5)
+```
+
+
+## Sampling variability and power: Small $n$ hurts
+
+```{r, echo = FALSE}
+g(n = n/5, b = 2, prob = .5)
+```
+
+
+
+
+## Put the data where the variance is (Low variance in Y0, p = .5)
+
+```{r, echo = FALSE}
+g(n = n, b = 2, sigma_0 = .01, prob = .5)
+```
+
+
+## Put the data where the variance is  (Low variance in Y0, p = .8)
+
+```{r, echo = FALSE}
+g(n = n, b = 2, sigma_0 = .01, prob = .8)
+```
+ 
+
+## Sampling variability and power (Base, no blocks)
+
+```{r, echo = FALSE}
+g(n = n, b = 2, prob = .5)
+```
+
+
+## Assignment can help: Use blocks when possible (Many blocks)
+
+```{r, echo = FALSE}
+g(n = n, b = 2,  prob = .5, n_blocks = n/2)
+```
+
+
+## Assignment can hurt: Avoid clustering when possible (Base, no clustering)
+
+```{r, echo = FALSE}
+g(n = n, b = 2, prob = .5)
+```
+
+
+## Assignment can hurt: Avoid clusters when possible (Large clusters)
+
+```{r, echo = FALSE}
+g(n = n, b = 2,  prob = .5, n_clusters = 4)
+```
+
+
+

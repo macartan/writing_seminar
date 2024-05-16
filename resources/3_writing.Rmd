@@ -1,0 +1,258 @@
+---
+title: "Writing: some principles"
+author: "Macartan Humphreys"
+date: "10/5/2020"
+output: beamer_presentation
+bibliography: bib.bib
+urlcolor: orange
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+# Structure
+
+Notes here: http://macartan.nyc/teaching/how-to-write/
+
+
+# Front matter
+
+* Include a  **table of contents**. 
+* You can include **acknowledgments** and thank colleagues and friends---anyone who gave you support
+* You can  **dedicate** this to someone if you like
+* You can have both a short abstract (quarter page) and a longer executive summary (two pages). Include:
+
+  * brief motivation
+  * brief strategy 
+  * main findings : positive or negative
+
+# Table of contents
+
+* This should be automated
+* In Word: use Styles to select formats as "Header 1" "Header 2" etc; then References / Insert Table of Contents
+* In  latex using `\section{}` and `subsection`
+* In R markdown using #, ## 
+
+Number sections e.g.  1, 1.1, 1.12, 1.2, 2.
+
+
+
+# References
+
+* The bibliography should contain an entry for every work cited---including websites---and should contain entries *only* for work cited.
+* There are *lots* of rules around correct  formatting in the text and at the end. Plus there are different sets of rules.
+* You should get this right but you shouldn't lose time.
+
+References in sentences either have the year in parentheses or the year and last name in parentheses. They should include page references when possible.
+
+Enter like this:
+
+* `@putnam2000bowling` said some great stuff
+* Putnam said some great stuff `[@putnam2000bowling]`
+* `@putnam2000bowling [p. 7]` said some great stuff
+* Putnam said some great stuff `[@putnam2000bowling, p. 7]`
+
+[More](https://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html)
+
+# References
+
+* The bibliography should contain an entry for every work cited---including websites---and should contain entries *only* for work cited.
+* There are *lots* of rules around correct  formatting in the text and at the end. Plus there are different sets of rules.
+* You should get this right but you shouldn't lose time.
+
+References in sentences either have the year in parentheses or the year and last name in parentheses. They should include page references when possible.
+
+Displays like this:
+
+* @putnam2000bowling said some great stuff
+* Putnam said some great stuff [@putnam2000bowling]
+* @putnam2000bowling [p. 7] said some great stuff
+* Putnam said some great stuff [@putnam2000bowling, p. 7]
+
+[More](https://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html)
+
+# Grabbing references
+
+I pull from google scholar mostly
+
+* I do a search. e.g.  https://scholar.google.de/scholar?hl=en&as_sdt=0%2C5&q=putnam+bowling+alone&btnG=
+* Then select the [bib](https://scholar.googleusercontent.com/scholar.bib?q=info:nQoGffkGw4MJ:scholar.google.com/&output=citation&scisdr=CgVA0Gv4EMHY0N6r9Ww:AAGBfm0AAAAAYA6u7WxVGiL8mR2PhobB31vo77xrrm3e&scisig=AAGBfm0AAAAAYA6u7eMD3UwBA3Q4An8W5YtfQrP8GTO6&scisf=4&ct=citation&cd=-1&hl=en) reference.
+* And save that into a `.bib` text file
+
+
+```{r, eval = FALSE, echo = TRUE}
+@incollection{putnam2000bowling,
+  title={Bowling alone},
+  author={Putnam, Robert D},
+  booktitle={Culture and politics},
+  pages={223--234},
+  year={2000},
+  publisher={Springer}
+}
+```
+
+# Web entries
+
+@NYT
+
+```{e, echo = TRUE, eval = FALSE}
+@online{NYT,
+  author = {{New York Times Editorial Board}},
+  title = {Hong Kong Crackdown Is an Early Test for Biden},
+  year = 2021,
+  url = {https://www.nytimes.com/2021/01/24/opinion/hong-kong-arrests.html},
+  urldate = {2021-01-25}
+}
+```
+
+# Grabbing references
+
+Other tools include Zotero, Endnote, Mendeley
+
+There's a guide here: https://subjectguides.library.american.edu/c.php?g=479020&p=3323781
+
+Principle is that you should spend a little time figuring out how to make this work and then not spend much time on it.
+
+# Footnotes
+
+* Footnotes generally preferred to endnotes
+* Use footnotes sparingly
+* Put singly at the end of a sentence, after the period.`^[Like this]`
+* Put singly at the end of a sentence, after the period.^[Like this]
+* Not like^[No!] that, or like this^[No].
+
+# Writing
+
+* Keep it sober, tight, straight to the point
+* Keep formal: Avoid contractions (I've, would've)
+* Avoid unnecessary superlatives
+* Avoid opinion (absent evidence)
+
+
+
+# Signposting
+
+* Political science writing is not like literary writing
+* Ordering: 
+  * You don't build up and then reveal the findings at the end
+  * You given then findings up front and then provide the evidence to support it
+  * You should *not* assume that readers read linearly: they treat this as a compendium not a poem
+  * So basically readers need to know what function every section has in the thesis and what function every paragraph has in a section
+
+# Signposting: Lots please
+
+
+**1. Introduction**
+I show that natural resource abundance causes conflict. In section 2 I provide the logic. In section 3 I describe my strategy. Sections 4 and 5 give results and section 6 discusses implications.
+
+**2. Theory**
+Three theories predict an adverse effect of natural resource abundance. I describe each in turn, I then discuss strategies to distinguish between these accounts.
+
+**3. Strategy**
+I estimate the effect of natural resources on conflict using qualitative and quantitative strategies. I describe each in turn.
+...
+
+  
+**5.1 Sierra Leone Case study**
+I first present general background about this case, I then explore whether there is evidence in support of each of mechanisms 1, 2, and 3.
+
+
+
+# Signposting: Theory
+
+* Signposting is as important for theory theses
+* The introduction should give the main argument and the arc of the evidence
+* Chapters should, broadly, begin with a statement of their role and end with a conclusion
+
+
+
+# Case study chapters
+
+Be clear why you have a case study and what you want to do with it
+
+a. Quick summary of why you have the case and what you learn from it
+b. Justify case selection: why this case? How does it relate to other possible cases?
+c. Say what you are looking for in the case and what you will infer depending on what you find
+d. Describe sources
+e. General description of the case
+f. Specific findings relevant for theories
+g. Case conclusions
+
+# Quantitative results chapters
+
+A standard ordering (whether in one chapter or many) is:
+
+1. Describe hypotheses
+2. Describe measures
+3. Describe tests
+4. Describe core results
+5. Interpret results substantively
+6. Describe robustness
+7. Describe any extensions
+8. Draw overall inferences
+
+If divided into chapters you might have 1-3 in one chapter, 4-5 in a second, 6-7 in a third and 8 in a conclusion.
+
+
+# Stay close to the data
+
+* Display your raw data
+
+```{r}
+x = c(runif(10), 10)
+y = c(runif(10) - x[1:10], 10)
+plot(x,y)
+abline(lm(y~x))
+
+```
+
+# The heart of an empirical analysis
+
+* Commonly there is just table or figure at the *heart* of an empirical analysis
+* Everything else is supporting the heart
+* Know what the heart is and help readers find it quickly
+
+* Often the  heart is a *figure* that pulls out the substantively important findings: the "quantities of interest"
+
+
+# Tables and Figures
+
+* When possible use figures rather than tables. 
+
+* Tables and figures should usually be in the main body of the text, not at the end.
+
+*  Tables and figures should be numbered and captioned/titled, in most cases. You can do automatic numbering word using “captions”, and in Latex using `\caption{}`
+
+* Tables and other output should NOT be presented as Stata output or other raw output. There are many tools to produce nice output without a lot of work (`outreg2` in Stata, `stargazer` in `R`, but many more)
+
+
+
+# Tables and Figures ctd
+
+* Coefficients should be arranged in rows with comprehensible and consistent variable names
+
+* standard errors should be shown in parentheses (or you should note what measure of uncertainty you are displaying if it is not standard errors)
+
+* include descriptive statistics like number of observations (N) and R-squared should be included.
+
+* Make sure to say what the dependent variables is
+
+* Precision: numbers should normally reported to two significant digits. e.g.  0.12 not 0.000121313245
+
+* Bottom line: It’s often useful and legitimate to give the bottom line of a table at the bottom of the table: “Table shows that there is no evidence that democracy causes growth”
+
+
+
+# Mathematical writing
+
+Use Latex when possible. 
+
+* For instance: `$\frac{e^x}{1+x}$` renders as $\frac{e^x}{1+x}$
+* This works the same way in Latex and `.Rmd`
+
+* [This guide](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwjngpT9irfuAhVR-qQKHWmHBxcQFjAAegQIAhAC&url=http%3A%2F%2Fwww.math.ubc.ca%2F~cytryn%2Fteaching%2FscienceOneF10W11%2Fhandouts%2FOS.writingMathCommented.pdf&usg=AOvVaw18QDi0hKFxiPtZt160hEtE) to mathematical writing has some nice tips: 
+
+# References
+

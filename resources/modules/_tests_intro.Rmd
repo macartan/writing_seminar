@@ -1,0 +1,118 @@
+---
+title: "Tests"
+author: "Macartan Humphreys"
+date: Feb 2017
+numbersections: true
+header-includes:
+  - \usepackage{amsmath, amssymb, bbm, amstext, array, listings, mathtools, multicolumn, caption, color, graphics, ulem, caption, changepage, atbegshi, soul}
+  - \newcommand\E{\mathbb{E}}
+  - \newcommand\V{\mathbb{V}}
+  - \hypersetup{colorlinks=true,linkcolor=red}
+  - \usepackage{ulem}
+  - \pdfstringdefDisableCommands{\let\sout\relax}
+fontsize: 11pt  
+output:
+  beamer_presentation:
+    theme: "AnnArbor"
+    colortheme: "seahorse"
+    slide_level: 2
+    keep_tex: false
+    includes:
+      in_header: include_nav.txt
+  ioslides_presentation:
+    self_contained: yes
+    widescreen: no
+---
+    
+```{r, echo=FALSE, warnings = FALSE, message = FALSE, include = FALSE}
+```
+
+
+## Tests
+
+In the classical approach to testing a hypothesis we ask:
+
+**How likely are we to see  data like this if the hypothesis is true?** 
+
+* If the answer is "not very likely" then we treat the hypothesis as suspect.
+* If the answer is *not* "not very likely" then the hypothesis is maintained (some say "accepted" but this is tricky as you may  want to "maintain" multiple incompatible hypotheses)
+
+How unlikely is "not very likely"
+
+## Weighing Evidence
+
+When we test a hypothesis we decide first on what sort of evidence we need to see in order to decide that the hypothesis is not reliable.
+
+**Othello** has a hypothesis that Desdemona is innocent. **Iago** confronts him with evidence:
+
+* See how she looks at him: would she look a him like that if she were innocent?
+* See how she defends him: would she defend him like that if she were innocent?
+* See he carries her handkerchief: would he have her handkerchief if she were innocent?
+* Othello, the chances of all of these things arising if she were innocent is surely less than 5%
+
+## Hypotheses are often rejected, sometimes maintained, but  rarely accepted
+
+Note that Othello is focused on the probability of the events if she were innocent but not the probability of the events if Iago were trying to trick him.
+
+He is not directly assessing his belief in whether she is faithful, but rather how likely the data would be if she were faithful.
+
+That is, he assesses:
+$$\Pr(\text{Data} | \text{Hypothesis is TRUE})$$
+
+not
+
+$$\Pr(\text{Hypothesis is TRUE} | \text{Data})$$
+
+<!-- ## Not Bayes -->
+
+<!-- Note: $Pr(\text{Data} | \text{Hypothesis is TRUE})$ and $Pr(\text{Hypothesis is TRUE} | \text{Data})$ are connected but in a slightly complex way (Bayes Rule): -->
+
+<!-- $$\Pr(\text{H} | \text{D}) = \frac{\Pr(\text{D} | \text{H})\Pr(\text{H})}{\Pr(\text{D} | \text{H })\Pr(\text{H}) + \Pr(\text{D} | \text{NOT H})\Pr(\text{NOT H})}$$ -->
+
+<!-- So your belief about the hypothesis should depend not just on the likelihood of seeing the data given the hypothesis but also on your prior belief about how plausible the hypothesis is. But this second part is ignored in classical tests. -->
+
+
+
+
+## Calculate a $p$ value in your head
+
+\begin{itemize}
+	\item  Illustrating $p$ values via "randomization inference"\dots
+	\item  Say you randomized assignment to treatment and your data looked like this.
+\begin{table}
+	\centering
+		\begin{tabular}{l|cccccccccc}
+		Unit 			& 1&2&3&4&5&6&7&8&9&10\\ \hline
+		Treatment & 0&0&0&0&0&0&0&1&0&0\\
+		Healthy? 	& 3&2&4&6&7&2&4&9&8&2\\ \hline			
+		\end{tabular}
+\end{table}
+	\item Does the treatment improve your health?
+	\item $p=$?
+\end{itemize}
+
+
+
+
+
+
+## Calculate a $p$ value in your head
+\begin{itemize}
+	\item  Illustrating $p$ values via "randomization inference"\dots
+	\item  Say you randomized assignment to treatment and your data looked like this.
+\begin{table}
+	\centering
+		\begin{tabular}{l|cccccccccc}
+		Unit 			& 1&2&3&4&5&6&7&8&9&10\\ \hline
+		Treatment & 0&0&0&0&0&0&0&0&1&0\\
+		Healthy? 	& 3&2&4&6&7&2&4&9&8&2\\ \hline			
+		\end{tabular}
+\end{table}
+	\item Does the treatment improve your health?
+	\item $p=$?
+\end{itemize}
+
+
+
+
+

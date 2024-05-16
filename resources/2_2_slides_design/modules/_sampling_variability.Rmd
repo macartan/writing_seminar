@@ -1,0 +1,42 @@
+---
+title: "Power"
+author: "Macartan Humphreys"
+date: "January 25, 2018"
+output: html_document
+---
+
+```{r, include=FALSE}
+library(randomizr)
+library(knitr)
+knitr::opts_chunk$set(echo = FALSE)
+
+```
+
+
+## What might we find from an experiment?
+
+Again
+
+```{r, comment = " "}
+Z <- complete_ra(n)
+kable(rbind(Z, Y = Y1*Z + Y0*(1-Z)), col.names = 1:n)
+```
+
+Estimated Effect: `r mean(Y1[Z==1] - Y0[Z==0])`
+
+```{r, warning = FALSE, out.width="60%", fig.align='center'}
+b <- c(b, mean(Y1[Z==1] - Y0[Z==0]))
+f(b, main = maintitle)
+```
+
+```{r, include = FALSE}
+s <- s+1
+my_eval <- (s < maxs)
+
+```
+
+`r s`
+
+```{r child="sampling_variability.Rmd", echo=FALSE, eval = my_eval}
+```
+

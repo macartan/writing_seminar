@@ -1,0 +1,164 @@
+---
+title: Article Template
+format:
+  nature-pdf:
+    # template credit: https://github.com/christopherkenny/nature
+    # journal.cite-style is included in the tex file but ignored by pandoc if 
+    # cite-method is not `natbib`.
+    journal:
+      cite-style: sn-nature
+#   classoption:
+#      - lineno
+    # `citeproc` is the pandoc default. Set `cite-method: natbib` if required
+    # to use the bst styles from the upstream template.
+    cite-method: citeproc
+    keep-tex: true
+    number-sections: true
+    embed-resources: true
+    include-in-header:  
+        - text: |
+            \usepackage{multicol}
+  html:
+    code-fold: true
+    html-math-method: katex
+  docx: default
+# The `csl` style will be used with LaTeX-based rendering of`nature-pdf`
+# if cite-method is `citeproc`. This is also the default if cite-method
+# is not specified.
+csl: _extensions/nature/csl/springer-basic-author-date.csl
+author:
+  - name: Author One
+    affiliations:
+      - name: Humboldt University
+        id: 1
+        department: Social Sciences
+        address: street
+        city: Berlin
+        state: Berlin
+        postal-code: 12345
+      - name: WZB
+        id: 2
+        department: IPI
+        address: here
+        city: Berlin
+        state: Berlin
+        postal-code: 12345
+    attributes:
+      equal-contributor: true
+  - name: Author Two
+    affiliations:
+      - name: Humboldt University
+        id: 1
+        department: Social Sciences
+        address: street
+        city: Berlin
+        state: Berlin
+        postal-code: 12345
+    email: corresponding@email.com
+    attributes:
+      equal-contributor: true
+      corresponding: true
+abstract: |
+  The abstract serves both as a general introduction to the topic and as a brief, non-technical summary of the main results and their implications. Authors are advised to check the author instructions for the journal they are submitting to for word limits and if structural elements like subheadings, citations, or equations are permitted.
+keywords: [template, demo]
+bibliography: bibliography.bib
+
+---
+
+```{r, include = FALSE}
+library(tidyverse)
+library(DeclareDesign)
+library(knitr)
+library(modelsummary)
+```
+\newpage
+
+# Introduction {#sec-intro}
+
+Your question. why we care
+
+Your findings and the contribution
+
+Roadmap
+
+
+# Motivation: Theory, Literature  {#sec-motivation}
+
+
+## Cross Referencing
+
+* To reference a figure with example label "plot", use `@fig-plot`.  @fig-1
+* Analogously, to reference a table with example label "data", use `@tbl-data`.  @tbl-simple.
+* To reference a section, such as the Introduction (@sec-intro), use `@sec-intro`.
+
+For complete information on cross referencing with Quarto, see <https://quarto.org/docs/authoring/cross-references.html>.
+
+## Citations
+
+* For a citation in parentheses use `[@greenwade93]` and for a text citation: `@greenwade93`. 
+* These render as [@greenwade93] and @greenwade93
+
+Multiple citations can be given as `[@greenwade93;@knuth1984texbook]`, producing  [@greenwade93;@knuth1984texbook]
+
+\newpage
+
+# Tables and Figures
+
+These can be produced on the fly or imported.
+
+## A sample figure
+
+Produced on the fly. See @fig-1.
+
+```{r, fig-1}
+#| echo: true
+#| fig-caption: "sample figure"
+
+read_rds("data/data.rds") |>
+  ggplot(aes(X, Y)) + geom_point()
+
+```
+
+\newpage
+
+
+# A sample summary stats table
+
+Produced on the fly. See @tbl-simple.
+
+
+```{r}
+#| label: tbl-simple
+#| echo: true
+
+read_rds("data/data.rds") |>
+  summarize(`mean Y` = mean(Y), 
+            `mean X` = mean(X), 
+            correlation = cor(X, Y)) |>
+  kable(digits = 2, caption = "A sample table")
+
+```
+\newpage
+
+# A sample analysis table
+
+Produced on the fly. 
+
+```{r tbl-ols}
+#| label: tbl-ols
+#| echo: true
+#| results: asis
+
+list(
+  lm_robust(Y~1, data = read_rds("data/data.rds")),
+  lm_robust(Y~X, data = read_rds("data/data.rds")))|>
+  modelsummary()
+
+```
+
+\newpage
+
+# References
+<!-- the pattern below controls the placement of the references -->
+:::{#refs}
+:::

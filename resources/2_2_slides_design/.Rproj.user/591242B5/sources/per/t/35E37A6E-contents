@@ -1,0 +1,193 @@
+---
+title: "Qualitative strategies"
+author: "Macartan Humphreys"
+numbersections: true
+header-includes:
+  - \usepackage{amsmath, amssymb, bbm, amstext, array, listings, mathtools, multicolumn, caption, color, graphics, ulem, caption, changepage, atbegshi, soul, xcolor}
+  - \newcommand\E{\mathbb{E}}
+  - \newcommand\V{\mathbb{V}}
+  - \hypersetup{colorlinks=true,linkcolor=red}
+  - \usepackage{ulem}
+  - \pdfstringdefDisableCommands{\let\sout\relax}
+fontsize: 11pt  
+output:
+  beamer_presentation:
+    slide_level: 2
+    keep_tex: false
+    includes:
+      in_header: include_nav.txt
+  ioslides_presentation:
+    self_contained: yes
+    widescreen: no
+---
+
+## Qualitative estimands
+
+* A common qualitative estimand is the "cause of an effect": given $Y=1$ and $X=1$ is $Y=1$ because $X=1$?
+
+* Randomization (alone) does not justify answers to "causes of effects" questions
+
+* We might be able to say that we think that the effect of a treatment on a given outcome is 1/3
+* But that does not justify claiming that the probability that the outcome is due to the treatment is 1/3
+
+
+## Qualitative estimands
+
+Here is the logic:
+
+* Say  I know that (binary) $X$ increases $Y$ from $\frac{1}{3}$ to $\frac{2}{3}$ on average. 
+* Say I observe  $Y=1$. What are the chances it is due to $X$?
+    *  One possibility is that $X$ has a positive effect for 2/3 of cases and a negative effect for 1/3 of cases. In that case whenever $X=Y=1$ this is due to X.
+    * Another is that $X$ never has a negative effect and it has a positive effect for 1/3 of cases and no effect on the rest. Then there's a 50% chance that $Y=1$ is due to $X=1$ (why 50%?)
+
+
+## Learning from clues
+
+* Classically qualitative strategies use *auxiliary* information to understand the relationship between *X* and *Y*.
+
+* For instance: You want to know if the swamp caused malaria
+  * Quantitative approach: Compare malaria incidence in places with and without swamps
+  * Qualitative approach: Look to see whether there mosquitoes are breeding at the swamp   
+
+* This approach typically requires a theory: conditional on theory $T$, observing $K$ increases my confidence that $X=1$ caused $Y=1$ in this case.
+
+
+## Process tracing
+
+* In process tracing such clues are called "CPO"--causal process observations
+
+* How informative a clue is is sometimes called its "probative value"
+   * sometimes you learn a lot when you *do* see a clue ($K=1$)
+   * sometimes you learn a lot when you do *not* see a clue despite looking for it ($K=0$)
+  
+* Classic tests:
+   * A "smoking gun" clue gives a lot of confidence when you find it
+   * A "hoop" clue gives a lot of confidence when you do not find it
+   
+
+## Bayesian updating
+
+See for instance [Fairfield and Charman](https://www.cambridge.org/core/journals/political-analysis/article/explicit-bayesian-analysis-for-process-tracing-guidelines-opportunities-and-caveats/F93D3EA784730ED731AC910EEF306231)
+
+We observe clue $K$ and want to update about hypothesis $A$ (given hypotheses $A$ or $B$ under consideration):
+
+
+$$\Pr(A|K) = \frac{\Pr(K|A)\Pr(A)}{\Pr(K|A)\Pr(A) + \Pr(K|B)\Pr(B)}$$
+
+The action is in the difference between $\Pr(K|A)$ and $\Pr(K|B)$
+
+
+## Qualitative tests: $b$ or $d$?
+
+```{r cluesinferences, fig.cap="\\label{CluesInferences1} Mapping from the probability of observing a clue if  $b$  ($\\phi_b$) or $d$ ($\\phi_d$) to a generalization of the Van-Evera tests.", echo = FALSE, fig.height=12, fig.width=12, out.height = "80%"}
+
+
+cex = 1
+plot(c(0,1), c(0,1), type="l", col="grey", xlab=expression(paste(phi[d], " (Probability of observing ", italic(K), " given d)")),
+     ylab=expression(paste(phi[b], " (Probability of observing ", italic(K), " given b)")),
+     main="Classification of tests")
+
+polygon(c(0,0,.5, 1/3, 0), c(.5, 1, 1, 2/3, .5), col = "grey", , border = FALSE)
+polygon(c(0, 1/3, 1,  0), c(0,2/3,1,0), col = "lightgrey", border = FALSE)
+polygon(c(0,2/3,1, 0), c(0, 1/3, 1, 0), col = "grey", border = FALSE)
+polygon(c(.5, 2/3, 1,  1, .5), c(0,1/3,.5,0,0), col = "lightgrey", border = FALSE)
+
+text(.15,.85, "K present: \n doubly decisive for b  \n K absent: \n doubly decisive for d  ", cex = cex)
+text(.05,.2833, "K present: \n smoking gun for b \n K absent \n hoop test for d", cex = cex)
+text(.7177,.95, "K present: \n hoop test for b \n K absent: \n smoking gun for d", cex = cex)
+text(.43,.57, "K present: \n straw in the wind for b \n K absent: \n straw in the wind for d", cex = cex)
+
+text(.85,.15, "K present: \n doubly decisive for d  \n K absent: \n doubly decisive for b", cex = cex)
+text(.95,.7177, "K present: \n hoop test for d \n K absent: \n smoking gun for b", cex = cex)
+text(.2833,.05, "K present: \n smoking gun test for d \n K absent: \n hoop test for b", cex = cex)
+text(.57,.43, "K present: \n straw in the wind for d \n K absent: \n straw in the wind for b ", cex = cex)
+
+arrows(.25,.7, .25, .85, col="red")
+arrows(.25,.7, .1, .7, col="red")
+
+text(.35, .775, "More sensitive \n for b", col="red", cex = cex)
+text(.1775, .65, "More specific \n for b", col="red", cex = cex)
+
+
+arrows(.75,.3, .9, .3, col="red")
+arrows(.75,.3, .75, .15, col="red")
+
+text(.65, .225, "More specific \n for d", col="red", cex = cex)
+text(.825, .35, "More sensitive \n for d", col="red", cex = cex)
+
+```
+
+
+## How might beliefs about probative value be supported?
+
+* Most common answer: "theory"
+* Better answer: background knowledge + specific assumptions
+
+For instance:
+
+* Say we know in a given population that:
+  * $X \rightarrow Y \leftarrow K$
+  * $\Pr(Y=1|X=0, K = 0) = 1$
+  * $\Pr(Y=1|X=1, K = 0) = .5$
+  * $\Pr(Y=1|X=0, K = 1) = 0$
+  * $\Pr(Y=1|X=1, K = 1) = .5$
+
+* The unit we care about is "exchangeable" with other units in this population
+
+Then for an $X=Y=1$ case: 
+
+*  seeing $K=1$ $\rightarrow$  $X$ caused $Y$ (why?) 
+*  seeing $K=0$ $\rightarrow$  $X$ did not cause $Y$ (why?) 
+
+
+
+## How might beliefs about probative value be supported?
+
+* Thus, doubly decisive clues are possible
+* But likely rare: most often best you can do is put bounds on causal effects
+
+## Case selection: What do you do with a case?
+
+* Establish that $X$ is indeed $X$ and $Y$ is indeed $Y$
+* Assess whether scope conditions of theory are indeed present
+* Assess whether the argument has "face validity"
+* Ideally look for pre-specified clues that support or weaken the claim
+
+
+## Case selection
+
+* Case selection depends on the estimand. Are you interested in a case level estimand or a population level estimand?
+
+Common strategies:
+
+1. On the regression line
+2. Off the regression line
+3. Most likely cases, least likely cases
+4. Proportionate to distribution (safe rule of thumb)
+
+less common but good:
+
+5. Follow the probative value:
+   * Perhaps $K$ is informative in one case not another
+   * For instance in the example above there is no point selecting a $X=Y=0$ case since you already know that in that case $K=1$: learning about $K$ will not be informative
+
+
+## Case selection: n
+
+How many cases?
+
+* No good answer
+* More always better except insofar as they reduce quality of analysis
+* If you are doing causal inference with  case comparison methods only then you want as many as possible and *at least* as many as you have explanations that you want to distinguish from each other
+
+
+## Mixed methods [advanced]
+
+Insight:
+
+* If observation of $X$ and $Y$ lets you update your beliefs about a causal effect
+* And if observation of $K$ also  lets you update your beliefs  about a causal effect
+* Then you can update jointly from $X, Y, K$
+
+$$Pr(H |X,Y,K)= \frac{Pr(X,Y,K|H)Pr(H)}{Pr(X,Y,K)}$$
+

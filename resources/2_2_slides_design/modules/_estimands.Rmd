@@ -1,0 +1,174 @@
+---
+title: "Estimands"
+author: "Macartan Humphreys"
+numbersections: true
+header-includes:
+  - \usepackage{amsmath, amssymb, bbm, amstext, array, listings, mathtools, multicolumn, caption, color, graphics, ulem, caption, changepage, atbegshi, soul, xcolor}
+  - \newcommand\E{\mathbb{E}}
+  - \newcommand\V{\mathbb{V}}
+  - \hypersetup{colorlinks=true,linkcolor=red}
+  - \usepackage{ulem}
+  - \pdfstringdefDisableCommands{\let\sout\relax}
+fontsize: 11pt  
+output:
+  beamer_presentation:
+    slide_level: 2
+    keep_tex: false
+    includes:
+      in_header: include_nav.txt
+  ioslides_presentation:
+    self_contained: yes
+    widescreen: no
+---
+
+
+
+## Estimands
+
+* The estimand is the thing you want to estimate
+* If you are estimating something you should be able to say what your estimand is
+* You are responsible for your estimand. Your estimator will not tell you what your estimand is
+* Just because you can calculate something does not mean that you have an estimand (You can test a hypothesis without having an estimand)
+
+<!-- ## Estimands: The Average Treatment Effect -->
+
+<!-- * The most common estimand is the **average treatment effect** -->
+
+<!-- * This is a **summary** of individual treatment effects: -->
+<!-- $$\tau_i = Y_i(1) - Y_i(0)$$  -->
+
+<!-- * For persons 1 and 2, the average is: -->
+<!-- $$\tau = \frac{1}{2}(Y_1(1) - Y_1(0)) + \frac{1}{2}(Y_2(1) - Y_2(0))$$  -->
+
+<!-- * More generally: -->
+<!-- $$\tau = \sum_i\frac{1}{n}(Y_i(1) - Y_i(0))$$  -->
+
+<!-- ## Estimands: ATE, ATT, ATC, S-, P-, C-, ITT, LATE -->
+<!-- Say that units are randomly assigned to treatment in different strata (maybe just one); with fixed, though possibly different, shares assigned in each stratum. Then the key estimands and estimators are: -->
+<!-- \scriptsize -->
+<!-- \begin{table}[htbp] \scriptsize -->
+<!-- 	\centering -->
+<!-- 		\begin{tabular}{rlclrl} \scriptsize  -->
+<!-- $\label{ATE} \tau_{ATE} \equiv$&$E\left(\tau_i\right) $&$=$&$ \sum\nolimits_{x} \frac{w_x}{\sum\nolimits_{j}w_{j}}\tau_x  $&$ \widehat{\tau}_{ATE} =$&$\sum\nolimits_{x} \frac{w_x}{\sum\nolimits_{j}w_{j}}\widehat{\tau}_x$ \\ -->
+<!-- $\label{ATT} \tau_{ATT} \equiv$&$E\left(\tau_i\right | Z_i = 1) $&=&$\sum\nolimits_{x} \frac{p_xw_x}{\sum\nolimits_{j}p_jw_j}\tau_x  $&$  \widehat{\tau}_{ATT} =$&$\sum\nolimits_{x} \frac{p_xw_x}{\sum\nolimits_{j}p_jw_j}\widehat{\tau}_x$ \\ -->
+<!-- $\label{ATC} \tau_{ATC} \equiv$&$E\left(\tau_i\right |  Z_i = 0) $&=&$\sum\nolimits_{x} \frac{(1-p_x)w_x}{\sum\nolimits_{j}(1-p_j)w_j}\tau_x  $&$ \widehat{\tau}_{ATC} =$&$\sum\nolimits_{x} \frac{(1-p_x)w_x}{\sum\nolimits_{j}(1-p_j)w_j}\widehat{\tau}_x $ -->
+<!-- 		\end{tabular} -->
+<!-- \end{table} -->
+<!-- where $x$ indexes strata, $p_x$ is the share of units in each stratum that is treated, and $w_x$ is the size of a stratum. -->
+
+<!-- Here: -->
+<!-- \begin{itemize} -->
+<!-- 	\item ATE is Average Treatment Effect (all units) -->
+<!-- 	\item ATT is Average Treatment Effect on the Treated -->
+<!-- 	\item ATC is Average Treatment Effect on the Controls -->
+<!-- 	\end{itemize} -->
+
+
+
+<!-- ## Estimands: ATE, ATT, ATC, S-, P-, C-, ITT, LATE -->
+<!-- \footnotesize -->
+<!-- In addition, each of these can be targets of interest: -->
+<!-- \begin{itemize}  -->
+<!-- 	\item for the \textbf{population}, in which case we refer to PATE, PATT, PATC and $\widehat{PATE}, \widehat{PATT},  \widehat{PATC}$ -->
+<!-- 	\item for a \textbf{sample}, in which case we refer to SATE, SATT, SATC, and $\widehat{SATE}, \widehat{SATT},  \widehat{SATC}$ -->
+<!-- \end{itemize} -->
+<!-- And for different subgroups,  -->
+<!-- \begin{itemize}  -->
+<!-- 	\item given some value on a covariate, in which case we refer to CATE (conditional average treatment effect) -->
+<!-- 	\item for unobservable subgroups, we estimate LATE (Local Average Treatment Effect (see below). -->
+<!-- \end{itemize} -->
+<!-- With non-compliance we might estimate ITT ---the ``intention to treat'' effect -->
+
+<!-- \bigskip -->
+<!-- Skip to \hyperlink{Fixer}{\beamergotobutton{Fixer}}  or \hyperlink{nools}{\beamergotobutton{Inference 1}} or \hyperlink{ideas}{\beamerreturnbutton{Big Ideas}}  -->
+
+
+
+## Examples of estimands
+
+* The average effect in the population
+* The average effect in the sample
+* The average effect for those treated
+* The average (counterfactual) effect for those not treated
+* The effect of assigning treatment
+* The effect of receiving treatment
+* The effect for men, for women
+* The effect of one effect on another effect
+* Whether $X=1$ was the cause of $Y = 1$
+* More difficult: the share of the effect of $X$ on $Y$ that passes through mediator $M$
+
+
+## Examples of estimands
+
+Consider the factorial design:
+
+<!-- \begin{table} -->
+<!-- \begin{tabular}{c c|c c} -->
+<!-- 	\hline  -->
+<!-- 	&  & X2 & \\  -->
+<!-- 	&  & 0 & 1  \\  -->
+<!-- 	\hline  -->
+<!-- X1	&  0 & & \\  -->
+<!--     &  1 & &	\hline  -->
+<!-- \end{tabular}  -->
+<!-- \end{table} -->
+
+
+
+\begin{table}
+\centering
+\begin{tabular}{cc|ccc}\scriptsize
+& & X2 \\
+& & 0 & 1\\  \hline
+X1 & 0 & Y(0,0) & Y(0,1)\\ 
+ & 1 & Y(1,0) & Y(1,1)\\
+\end{tabular}  
+\end{table}
+
+
+
+
+Multiple targets of inference in a \color{red}factorial design
+
+* **Interactive** effect is $$(Y(1,1) - Y(0,1)) - (Y(1, 0) - Y(0,0))$$
+* **Interpretation**: How much bigger is the effect of $X1$ when $X2=1$ than it is when $X2=0$
+
+
+
+
+## Examples of estimands
+
+Consider the factorial design:
+
+<!-- \begin{table} -->
+<!-- \begin{tabular}{c c|c c} -->
+<!-- 	\hline  -->
+<!-- 	&  & X2 & \\  -->
+<!-- 	&  & 0 & 1  \\  -->
+<!-- 	\hline  -->
+<!-- X1	&  0 & & \\  -->
+<!--     &  1 & &	\hline  -->
+<!-- \end{tabular}  -->
+<!-- \end{table} -->
+
+
+
+\begin{table}
+\centering
+\begin{tabular}{cc|ccc}\scriptsize
+& & X2 \\
+& & 0 & 1\\  \hline
+X1 & 0 & Y(0,0) & Y(0,1)\\ 
+ & 1 & Y(1,0) & Y(1,1)\\
+\end{tabular}  
+\end{table}
+
+
+**Question**: What is the estimand "\color{red}The overall effect of X1\color{black}"?
+
+
+## Takeaway on Estimands
+
+* \color{red}Takeaway\color{black}: Estimands (the target of inference) should be defined clearly.
+* It is good practice to define them in terms of potential outcomes. 
+

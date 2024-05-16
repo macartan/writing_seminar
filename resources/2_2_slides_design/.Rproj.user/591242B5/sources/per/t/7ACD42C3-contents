@@ -1,0 +1,592 @@
+---
+title: "CausalQueries: Make, Update, and Query Causal Models"
+date: "24 Sept 2020"
+output: 
+  beamer_presentation:
+    slide_level: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(DeclareDesign)
+do_diagnosis = FALSE
+options(mc.cores = parallel::detectCores())
+source("parameters.R")
+```
+
+
+
+## Outline
+
+* Motivation
+* Models and queries
+* The package and what it does
+* Some applications
+   * Justifying classical tests
+   * Nothing from nothing
+   * Billy and Suzie
+   * Experimental and observational data
+   * Police stopping
+   * Democracy and Inquality
+* Limitations and questions
+
+# Motivation
+
+## Motivation: Qualitative and Quantitative Inference
+
+
+A motivating example: 
+
+* Did this swamp cause malaria in this village?
+
+* How do we answer this question?
+
+
+## 2 Quantitative inference
+
+Strategy:
+
+* I examine a large set of villages with and without swamps and with and without malaria
+* I worry about confounding and all that
+* I then form a general view for this population about the chances that swamps cause malaria
+* I apply the population inference to this case^[Even with an RCT the estimand is not point identified.] 
+
+## 2 Qualitative inference
+
+Strategy:
+
+* I go to the village and gather within-case information
+* e.g. Do mosquitoes breed in the swamp? 
+
+  * if I observe no breeding I conclude the swamp was not the cause; 
+  * if I observe breeding, I update towards believing the swamp caused malaria
+
+Note:
+
+* The *really critical* thing is that my inference depends on applying a *theory* of how the world works to a case at hand. 
+* *This only makes sense if I believe the theory*
+
+
+## 2 Qualitative inference
+
+```{r swamp, echo = FALSE}
+library(CausalQueries)
+M <- make_model("Swamp -> Wrigglers -> Bites -> Infection")
+plot(M)
+
+```
+
+
+## 2 Mixed methods inference
+
+* Say I can see data on swamps and malaria in many cases ($X$, $Y$ data, ideally from an RCT)
+* But I can also select a few cases and go deep to "trace" the paths between swamps and malaria ($M$)
+
+* Then I can use both types of data ($X$,$Y$ on many cases; $M$ on a few) to **simultaneously** update my beliefs about whether $X$ caused $Y$.
+
+    * This can  be done using Bayes' rule
+    * It's not all that hard
+
+* But, you need a model to do it (even if you  have considerable uncertainty over the model) 
+
+## Generalization
+
+You can generalize this idea to:
+
+1. Complex models (DAGs)^[Though the complexity of the model grows rapidly with the complexity of the DAG]
+2. A rich variety of causal questions
+3. Partial data on different types of nodes
+
+# Models
+
+## X, Y, Model
+
+Say we believe, for binary nodes:
+
+$$X \rightarrow Y$$
+
+i.e. $X$ possible affects $Y$ and $X$ is as-if randomly assigned
+
+Then:
+
+* There are two possible "nodal types" for $X$: $\theta_X \in \{\theta_0,\theta_1\}$
+* There are *four* "nodal types" for $Y$: four ways that $Y$ might react to $X$ for a unit: $$\theta_Y \in \{\theta^Y_{00}, \theta^Y_{10}, \theta^Y_{01}, \theta^Y_{11}\}$$
+
+Here $\theta^Y_{ij}$ means: $Y(0)=i, Y(1)=j$
+
+
+## X, Y, Model
+
+* Understanding the causal relations at the case level means learning about $\theta_X,\theta_Y$, the case level causal type
+* Understanding the causal relations at a population level means learning about the distribution of $\theta_X,\theta_Y$.
+
+  * We let $\lambda^V$ denote the (categorical) distribution over $\theta^V$
+  * For instance: $\lambda^Y_{01} = \Pr(\theta^Y = \theta^Y_{01})$
+  * We might have priors over $\lambda^Y$ represented by a Dirichlet distribution
+  
+## This generalizes
+
+```{r, echo = FALSE, out.height="30%", fig.width=2, fig.height=1, fig.align='center'}
+plot(make_model("X->M -> Y <- X"))
+```
+
+\bigskip
+
+
+| Model        | $X \rightarrow Y$         | $X \rightarrow M \rightarrow Y \leftarrow X$  |
+|--------------|---------------------------|---------------------------------|
+| Nodal types  | $\theta^X_i$ (2 types)    | $\theta^X_i$ (2 types)          |
+|              | $\theta^Y_{i,j}$ (4 types)| $\theta^M_{i,j}$ (4 types)      |
+|              |                           | $\theta^Y_{h,i,j,k}$ (16 types) |
+|              |                           |                                 |
+| Causal types | $2\times4 = 8$            | $2\times4\times16 = 128$        |
+|              |                           |                                 |
+| Priors on $\lambda$| Beta, 4-Dirichlet         | Beta, 4-dirichlet, 16-Dirichlet |
+
+
+## As a picture
+```{r}
+
+```
+
+## Let's illustrate using `CausalQueries` and a mediation case like this
+
+We define a  model with $X$ causing $Y$ through $M$ but $X$ possibly confounded ---$X$ more likely in cases where $X$ causes $M$ or $Y$.
+
+
+```{r}
+library(CausalQueries)
+model <- make_model("X -> M -> Y") %>%
+         set_confound(
+           list(X = "Y[X=1]>Y[X=0] | M[X=1]>M[X=0]")) %>%
+         set_prior_distribution()
+```
+
+
+Note that:
+
+* we have not assumed as-if randomization of $X$^[We have put structure on the nature of confounding, though any structure is permissible] and 
+* we have not imposed any kinds of monotonicty restrictions or other restrictions on functional forms
+* we have imposed teh graphical structure --- no direct effects
+
+
+## Plot it
+
+```{r}
+plot(model)
+```
+
+## Simulate performance
+
+We imagine a real world in which there are in fact monotonic effects and confounding, though this is not known.
+
+```{r}
+model <- set_parameters(model,
+         parameters = c(.2, .8, .5, .5, 
+                        .2,  0, .8,  0, 
+                         0,  0, .8, .2))
+```
+
+
+## Data and updating
+
+We update on simulated data like this:
+
+```{r}
+data <- simulate_data(model, n = 2000)
+```
+
+```{r, eval = FALSE}
+posterior <- update_model(model, data)
+```
+
+
+```{r, include = FALSE}
+if(do_diagnosis){
+  posterior <- update_model(model, data, refresh = 0)
+  write_rds(posterior, "posterior.rds")
+  }
+posterior <- read_rds("posterior.rds")
+```
+
+## Results
+
+```{r}
+posterior_estimands  <- CausalQueries::query_model(
+    posterior, 
+    queries = list(COE = "c(Y[X=1] > Y[X=0])"), 
+    given   = c("X==1 & Y==1", 
+                "X==1 & Y==1 & M==1", 
+                "X==1 & Y==1 & M==0"),
+    using = "posteriors")
+
+```
+
+```{r, include = FALSE}
+prior_estimands  <- CausalQueries::query_model(
+    posterior, 
+    queries = list(COE = "c(Y[X=1] > Y[X=0])"), 
+    given   = c("X==1 & Y==1", "X==1 & Y==1 & M==1", "X==1 & Y==1 & M==0"),
+    using = "priors")
+
+```
+
+
+```{r, include = FALSE}
+estimands  <- CausalQueries::query_model(
+    posterior, 
+    queries = list(COE = "c(Y[X=1] > Y[X=0])"), 
+    given   = c("X==1 & Y==1", "X==1 & Y==1 & M==1", "X==1 & Y==1 & M==0"),
+    using = "parameters")
+
+```
+
+## Results
+
+```{r, echo = FALSE}
+library(knitr)
+
+stitched <- cbind(estimands[,c(2, 4)],
+                  prior = prior_estimands[,4],
+                  posterior = posterior_estimands[,c(4, 5)])
+names(stitched)[2] <- "truth"
+names(stitched)[4:5] <- c("post.mean", "sd")
+                  
+
+kable(stitched, caption = "Learning")
+```
+
+
+
+## Sum up
+
+We see that we can learn from observation of $M$ about whether $X$ caused $Y$ in a case.
+
+This is remarkable because:
+
+* We have a non experimental design in which the effect of $X$ on $Y$ is not identified
+* The probability that $Y$ is caused by $X$ is also not identified.
+* We placed no restrictions on functional forms except those implied by the DAG (notably $X$ works via $Y$)
+* We did, however, specify the form of possible confounding, qualitatively; though not its direction or magnitude.
+
+
+# Police stopping
+
+## Model
+
+Three "qualitative" restrictions in addition to causal structure:
+
+```{r}
+
+discrimination <- 
+  make_model("Race -> Stop -> Force <- Race; 
+              Stop <- Suspicious -> Force") %>%
+  
+    set_restrictions("Force[Stop=0] == 1") %>%
+  
+    set_restrictions("Force[Race=0] > Force[Race=1]") %>%
+  
+    set_restrictions("Stop[Race=0] > Stop[Race=1]") %>%
+
+    set_restrictions("Stop[Suspicious=0] > Stop[Suspicious=1]") %>%
+  
+    set_restrictions("Force[Suspicious=0] > Force[Suspicious=1]")
+
+```
+
+## Stopping estimands
+
+```{r}
+discrimination %>%
+  query_model(queries = "Force[Race=1]-Force[Race=0]",
+  given = c(TRUE, "Stop==1"),
+  expand_grid = TRUE,
+  using = "parameters") %>%
+kable
+    
+```
+
+
+```{r}
+df <- discrimination %>% make_data(n = 50000) %>% 
+  mutate(Force = ifelse(Stop==0, NA, Force)) %>% 
+  select(-Suspicious) 
+
+df %>%
+  lm_robust(Force ~ Race, data = .) %>% tidy %>% kable(digits = 2)
+
+if(do_diagnosis){
+discrimination <- update_model(discrimination, df) 
+write_rds(discrimination, "saved/discrimination.rds")
+
+q_discrimination <- discrimination %>% 
+  query_model(queries = "Force[Race=1]-Force[Race=0]",
+  given = c(TRUE, "Stop==1"),
+  expand_grid = TRUE,
+  using = "posteriors")
+write_rds(q_discrimination, "saved/q_discrimination.rds")
+
+d_discrimination <- discrimination %>% 
+  query_distribution(
+    query = "Force[Race=1]-Force[Race=0]",
+    given = "Stop==1",
+  using = "posteriors")
+write_rds(d_discrimination, "saved/d_discrimination.rds")
+
+}
+
+discrimination   <- read_rds("saved/discrimination.rds") 
+q_discrimination <- read_rds("saved/q_discrimination.rds") 
+d_discrimination <- read_rds("saved/d_discrimination.rds") 
+
+
+hist(d_discrimination)
+abline(v  = (df %>%
+  lm_robust(Force ~ Race, data = .) %>% tidy)[2,2], col = "red")
+abline(v = 
+discrimination %>%
+  query_model(queries = "Force[Race=1]-Force[Race=0]",
+  given = "Stop==1",
+  expand_grid = TRUE,
+  using = "parameters") %>% pull(mean), col = "blue")
+
+
+q_discrimination %>% kable
+
+```
+
+
+## Possible world
+
+# A model with mixed experimental and observational data
+
+## The model
+
+
+```{r}
+model <-
+  make_model("R -> X; O -> X; Z -> X; X -> Y") %>%
+  set_restrictions(list(X = "X01000111"), 
+                   action = "keep") %>%
+  set_confound(list(O = "(Y[X=1] > Y[X=0])", 
+                    O = "(Y[X=1] < Y[X=0])", 
+                    O = "(Y[X=1] == 1)"))
+```
+
+$R$ (for "randomized") is a switch that governs whether $X$ is determined by an observational process ($O$) or a randomized process ($Z$).
+
+
+## The graph
+
+```{r}
+plot(model)
+```
+
+```{r, echo = FALSE, include = FALSE}
+P <- get_parameter_matrix(model)
+kable(P[,1:4])
+```
+
+
+## Parameters
+
+We set parameters such that the true effect is .2 but naive analysis on the observational data would yield a strongly upwardly biased estimate.
+
+
+```{r}
+model <- set_parameters(model, c(.2, .8, .8, .2, 
+                                 .2, .8, .8, .2, 
+                                 .5, .5, .5, .5, 
+                                  1,
+                                 .2, .2, .4, .2))
+```
+
+
+The estimands:
+
+```{r, echo = FALSE}
+result <- CausalQueries::query_model(
+    model, 
+    queries = list(ATE = "c(Y[X=1] - Y[X=0])"), 
+    given   = list(TRUE, "R==0", "R==1"),
+    using = "parameters")
+kable(result)
+```
+
+## Data
+
+
+```{r}
+data <- simulate_data(model, n = 50000)
+```
+
+
+## Estimates
+
+The CausalQueries estimates are:
+
+```{r, eval = FALSE}
+posterior <- update_model(model, data)
+```
+
+
+```{r, message = FALSE, warning = FALSE, include = FALSE}
+if(do_diagnosis){
+  write_rds(update_model(model, data), "exp_obs.rds")
+  }
+updated <- read_rds("exp_obs.rds")
+```
+
+```{r, echo = FALSE}
+result <- CausalQueries::query_model(
+    updated, 
+    queries = list(ATE = "c(Y[X=1] - Y[X=0])"), 
+    given   = list(TRUE, "R==0", "R==1"),
+    using   = "posteriors")
+kable(result)
+```
+
+
+
+## Recovering observational quantities
+
+A key quantity of interest from this model is the average effect of treatment conditional on being in treatment in the observational group. We have:
+
+```{r, echo = FALSE}
+result2 <- CausalQueries::query_model(
+    updated, 
+    queries = list(ATE = "c(Y[X=1] - Y[X=0])"), 
+    given   = list("R==1 & X==0", "R==1 & X==1", "R==0 & X==0", "R==0 & X==1"),
+    using = "posteriors")
+
+kable(result2)
+```
+
+Note the negative effect in the observational control group.
+
+## Comparison with experimental data alone
+
+```{r, eval = FALSE}
+posterior <- update_model(model, data[data$R==1,])
+```
+
+```{r, message = FALSE, warning = FALSE, include = FALSE}
+if(do_diagnosis){
+  write_rds(update_model(model, data[data$R==1,]), "exp_obs_2.rds")
+  }
+updated <- read_rds("exp_obs_2.rds")
+```
+
+```{r, echo = FALSE}
+result <- CausalQueries::query_model(
+    updated, 
+    queries = list(ATE = "c(Y[X=1] - Y[X=0])"), 
+    given   = list(TRUE, "R==0", "R==1"),
+    using   = "posteriors")
+kable(result)
+```
+
+
+## Inferences if observational assignment unknown
+
+Assume that data is not available on $O$ for cases assigned to $R=1$.
+
+```{r}
+data$O[data$R == 1] <- NA
+```
+
+
+```{r, message = FALSE, warning = FALSE, include = FALSE}
+if(do_diagnosis){
+  write_rds(update_model(model, data), "exp_obs_3.rds")
+  }
+updated <- read_rds("exp_obs_3.rds")
+```
+
+
+```{r, echo = FALSE}
+result2 <- CausalQueries::query_model(
+    updated, 
+    queries = list(ATE = "c(Y[X=1] - Y[X=0])"), 
+    given = list("R==1 & X==0", "R==1 & X==1", "R==0 & X==0", "R==0 & X==1"),
+    using = "posteriors")
+
+kable(result2)
+```
+
+
+# `CausalQueries` functions and procedures
+
+## Core functions
+
+Functions to define models:
+
+* `make_model`, `set_priors`, `set_restrictions`, `set_confounds`, `set_parameters`
+
+Functions to inspect models: 
+
+* `plot`, `get_parameter_matrix` 
+
+Data functions
+
+* `simulate_data`
+
+Process tracing  functions
+
+* `conditional_inferences`  `is_informative` (to come) `explain_it` (to come)
+
+Bayesian updating
+
+* `CausalQueries`
+
+Inference
+
+* `get_estimands`
+
+## Under the hood
+
+* A node with $k$ parents has $2^{\left(2^k\right)}$ causal types. For instance if $Y$ is possibly caused by $X_1$ and $X_2$ there are 16 possible causal types for $Y$, corresponding to the $2^4$ values that $Y$ could take given $X_1$ and $X_2$ take any of the four values $(0,0), (0,1), (1,0), (1,1)$.
+
+* A graph in which node $j$ has $k_j$ parents has $\prod_j2^{\left(2^{k_j}\right)}$ "causal types" that uniquely determine what data will be observed for a type under all possible interventions
+
+* We seek to update beliefs about causal types given data. In the no confounding case we start with Dirichlet priors on all possible causal relations for each node. The likelihood is the product of many differentially dimensioned Dirichlets.
+
+## Under the hood: Likelihoods
+
+Say $X \rightarrow M \rightarrow Y$ 
+
+We randomly sample 1 case and observe $X=M=Y=1$:
+
+$$\Pr(X=Y=1, M = 1 | \lambda) = \lambda^X_1(\lambda^M_{01} + \lambda^M_{11})(\lambda^Y_{01} + \lambda^Y_{11})$$
+
+We randomly sample a second case and gather data on $X$ and $Y$ only. We observe  $X=Y=1$:
+
+$$\Pr(X=Y=1 | \lambda) = \sum_{m=0}^1\Pr(X=Y=1, M = m | \lambda)$$
+
+or:
+$$\Pr(X=Y=1 | \lambda) = \lambda^X_1((\lambda^M_{10}+\lambda^M_{00})\lambda^Y_{10} + (\lambda^M_{01} + \lambda^M_{11})\lambda^Y_{01} + \lambda^Y_{11})$$
+
+Joint probability: product of these probabilities.
+
+## Many implications
+
+You could use this kind of model, for example, if you have both $X,Y$ data on many cases and qualitative data, $M$, (e.g. process data) on some.
+
+With a model in hand you can ask:
+
+* *how many* cases should I look at?
+* what types of *cases* should I look at?
+* what *evidence* should I look at 
+
+Also, richer questions become possible...
+
+Estimands frequently not identified, but bounded, as for example with the "causes of effects" estimand or the "average treatment effect" given confounding.
+
+## Fin
+
+Credits: 
+
+* `CausalQueries` generalizes the biqq models described in [Humphreys and Jacobs, 2015](https://doi.org/10.1017/S0003055415000453) using ideas developed in [Pearl, 2009](https://doi.org/10.1017/CBO9780511803161). 
+* Package contributors: Clara Bicalho, [Jasper Cooper](http://jasper-cooper.com/),  Macartan Humphreys, [Lily Medina](https://lilymedina.github.io/) and [Georgiy Syunyaev](http://gsyunyaev.com/).
+

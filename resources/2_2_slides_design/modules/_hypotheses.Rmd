@@ -1,0 +1,87 @@
+---
+title: "Hypotheses"
+author: "Macartan Humphreys"
+date: Feb 2017
+numbersections: true
+header-includes:
+  - \usepackage{amsmath, amssymb, bbm, amstext, array, listings, mathtools, multicolumn, caption, color, graphics, ulem, caption, changepage, atbegshi, soul}
+  - \newcommand\E{\mathbb{E}}
+  - \newcommand\V{\mathbb{V}}
+  - \hypersetup{colorlinks=true,linkcolor=red}
+  - \usepackage{ulem}
+  - \pdfstringdefDisableCommands{\let\sout\relax}
+fontsize: 11pt  
+output:
+  beamer_presentation:
+    theme: "AnnArbor"
+    colortheme: "seahorse"
+    slide_level: 2
+    keep_tex: false
+    includes:
+      in_header: include_nav.txt
+  ioslides_presentation:
+    self_contained: yes
+    widescreen: no
+---
+    
+```{r, echo=FALSE, warnings = FALSE, message = FALSE, include = FALSE}
+```
+
+
+
+## Characteristics of  good hypotheses
+
+* They  are  possibly TRUE or FALSE
+* They  are  **falsifiable**
+* They are statements about **the world**, not your analysis
+* They are simple (not double barreled)
+* They involve clear concepts
+* They are **few**, and they are motivated
+* They are **contested**: You will learn something whether the data supports them or rejects them. Most importantly: you are not sure if they are true or false
+* They are numbered, and maybe even named
+
+## Some hypotheses
+
+Consider these:
+
+* Education is very important
+* Education increases your income
+* Education either increases, decreases, or has no effect on your income
+* Education  is good for you because it  strengthens your character in  very fundamental ways that you could never measure
+
+Now:
+
+* Just one of these is not a hypothesis. Which one?
+* Just one of these is  a good hypothesis. Which one?
+
+<!-- ## Some more bad ones -->
+
+<!-- **H1**: The election of Donald Trump will have a big  effect on world security because it will make many world leaders uncertain about whether the US will support them in case of attack and by increasing  competition over natural resources -->
+
+<!-- **H2** The election of Donald Trump will have no statistically significant effect on world security -->
+
+<!-- What is wrong with these? -->
+
+## Nulls: A point of confusion
+
+Because of an unusual convention, social scientists often describe hypotheses in terms of what they **expect** but then *test* the null hypothesis of no effect
+
+eg:
+
+* H1: Competition reduces prices
+* H-null: Competition has no effect on prices
+
+<!-- **Test**: how likely is the data given the null -->
+
+<!-- \color{red} A $p$ value is *the probability of data like what you see under some particular hypothesis* -->
+
+
+## Take home ideas \label{ideas}
+
+* You don't need them, but stating expectations in terms of hypotheses provides *discipline* to a research project.
+
+* Hypotheses are statements about the world that you seek to *reject*
+
+* A good hypothesis is simple and falsifiable
+
+* A $p$ value is the probability of data like what you see under some particular hypothesis

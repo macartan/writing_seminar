@@ -1,0 +1,130 @@
+---
+title: "An argument"
+author: "Macartan Humphreys"
+date: Feb 2017
+numbersections: true
+header-includes:
+  - \usepackage{amsmath, amssymb, bbm, amstext, array, listings, mathtools, multicolumn, caption, color, graphics, ulem, caption, changepage, atbegshi, soul}
+  - \newcommand\E{\mathbb{E}}
+  - \newcommand\V{\mathbb{V}}
+  - \hypersetup{colorlinks=true,linkcolor=red}
+  - \usepackage{ulem}
+  - \pdfstringdefDisableCommands{\let\sout\relax}
+fontsize: 11pt  
+output:
+  beamer_presentation:
+    slide_level: 2
+    keep_tex: true
+    includes:
+      in_header: include_nav.txt
+  ioslides_presentation:
+    self_contained: yes
+    widescreen: no
+---
+  
+```{r, echo=FALSE, warnings = FALSE, message = FALSE, include = FALSE}
+rm(list = ls())
+set.seed(343)
+suppressMessages({
+  library(DeclareDesign)
+  library(xtable)
+  library(knitr)
+  library(sandwich)
+  library(lmtest)
+  library(ggplot2)
+  library(dplyr)
+  library(knitr)
+  library(CausalQueries)
+
+
+})
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, error = TRUE, message = FALSE, 
+                      eval = TRUE, tidy = FALSE, tidy.opts = list(width.cutoff = 50),
+                      strip_white = FALSE, results = 'asis', fix.ext = 'pdf', cache = FALSE)
+
+```
+
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## An argument:
+
+Here is a complete, albeit barebones (and possibly incorrect), argument:
+
+* Good institutions (***I***) cause economic growth (***G***), except in countries with large stocks of natural resources (***N***)
+* The reason is that institutions encourage people to invest (***V***) which spurs growth (this effect does not kick in in natural resource rich countries as people just live off rent)  
+* Growth also makes it easier to maintain good institutions, which creates a virtuous cycle 
+* Being an ally (***A***) of the US helps  growth, but it can corrupt domestic institutions.
+* Historically, places with climates (***C***) suitable for colonizers to settle had better institutions. These climatic conditions are otherwise irrelevant for contemporary economic growth. 
+
+## Some counterarguments:
+
+*	Places with climates suitable for colonizers benefited from better access to international markets which led to growth.
+*	Good soil is also important for growth! 
+* Good institutions also make sure that investments yield greater returns and that's what causes growth
+
+
+## Questions on Nodes
+
+* 	What are the dependent variables?
+* 	What are the independent variables?
+* 	What are the mediating variables?
+* 	What are the conditioning variables?
+* 	What are the confounding variables?
+* 	What are the instrumental variables?
+* 	Graph the relations between the variables.
+
+## Questions on Inference
+
+* 	Say *I* and *G* are positively correlated. Does this mean that *I* causes *G*?
+* 	Say *I* and *G* are negatively correlated. Does this mean that *I* does not cause *G*?
+* 	How might you estimate the effect of *I* on *G*?
+* 	How does *C* help establish the link between *I* and *G*?
+
+* Where is the theory? Is in equivalent to the graph or is it something else that generates the graph?
+* 	How might you check if the proposed theory is correct?
+* 	Which of the counterarguments are strong and why?
+
+## A graph
+
+
+```{r, echo = FALSE, out.height="50%", , fig.align='center'}
+plot(make_model("I1 -> V -> G <- N; C -> I1 <- A -> G; G -> I2", add_causal_types = FALSE)) + ggtitle("")
+```
+
+
+
+## Exercises: Dissect these arguments
+
+Four arguments. For each one you should identify the:
+
+* type of argument (effect of $X$, cause of $Y$, effect of $X$ on $Y$)
+* unit of analysis
+* dependent variable(s)
+* independent variable(s)
+* mediator(s)
+* possible conditioning variable(s)
+* possible confounder(s)
+* possible identification strategy
+* relevant key agent(s) (actor(s))
+* measurement strategy
+
+
+## A. Natural resources and conflict
+
+In developing countries that discover natural resources, such as oil, the ruling elite can extract wealth without needing to tax citizens and develop the state apparatus. Because the state does not rely on taxation for government revenue, it does not need to set up accountability structures or extend its reach and citizens do not feel that they have ownership over the state. The state therefore becomes both less democratic and weaker than if it had not discovered the resources.
+
+##  B. Democracy and growth
+
+Rich countries are more likely to be democratic for the simple reason that when people become wealthier they refuse to be dictated to by others and they demand a role in government. The marginal effects of income increases are greater for poorer countries because the impacts on eduction are greatest at these levels. You can test this proposition by exploiting natural variation in commodity prices which provide shocks to national income, especially for countries dependent on primary commodity exports.
+
+## C. Factor Endowments and Coalitions
+
+When countries increase trade (imports and exports), the returns to economic factors (such as labor, land and capital) are affected differently. Specifically, the returns to factors that are the most *abundant* are positive, while the returns to factors that are the most *scarce* are  negative. Therefore, the relative factor endowments of a country will predict what sort of political coalitions will form (eg Land versus Labor + Capital) and which groups will favor free trade policies. 
+
+## D. Democratic peace 
+
+In democratic states, leaders are accountable for any losses incurred as a result of the wars that they enter into. Two states with democratic leaders are also more likely to share a common set of norms, and to engage in trade with one another. Therefore, two democracies are far less likely to enter into war with one another than a democracy and a non-democracy, or two non-democracies.
+

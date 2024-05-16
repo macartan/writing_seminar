@@ -1,0 +1,129 @@
+---
+title: "Nodes and Claims"
+author: "Macartan Humphreys"
+date: Feb 2017
+numbersections: true
+header-includes:
+  - \usepackage{amsmath, amssymb, bbm, amstext, array, listings, mathtools, multicolumn, caption, color, graphics, ulem, caption, changepage, atbegshi, soul}
+  - \newcommand\E{\mathbb{E}}
+  - \newcommand\V{\mathbb{V}}
+  - \hypersetup{colorlinks=true,linkcolor=red}
+  - \usepackage{ulem}
+  - \pdfstringdefDisableCommands{\let\sout\relax}
+fontsize: 11pt  
+output:
+  beamer_presentation:
+    slide_level: 2
+    keep_tex: true
+    includes:
+      in_header: include_nav.txt
+  ioslides_presentation:
+    self_contained: yes
+    widescreen: no
+---
+  
+```{r, echo=FALSE, warnings = FALSE, message = FALSE, include = FALSE}
+rm(list = ls())
+set.seed(343)
+suppressMessages({
+  library(DeclareDesign)
+  library(xtable)
+  library(knitr)
+  library(sandwich)
+  library(lmtest)
+  library(ggplot2)
+  library(dplyr)
+  library(knitr)
+  library(CausalQueries)
+
+
+})
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, error = TRUE, message = FALSE, 
+                      eval = TRUE, tidy = FALSE, tidy.opts = list(width.cutoff = 50),
+                      strip_white = FALSE, results = 'asis', fix.ext = 'pdf', cache = FALSE)
+
+library(randomizr)
+```
+
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Types of claims
+
+$$X \rightarrow Y$$
+
+## Types of claims
+
+$$X \rightarrow Y$$
+
+* Analytic claims: $X=1$ *implies* $Y=1$ 
+* Descriptive claims: $X=1$ when $Y=1$
+* Causal claims: $X=1$ causes $Y=1$
+
+We mostly focus on causal claims. Even claims we think of as descriptive are often causal claims.
+
+## What are $X$ and $Y$
+
+$$X \rightarrow Y$$
+
+* Names for $X$: independent variable, explanatory variable, input, exogeneous  variable, cause, driver, right hand side variable
+
+* Names for $Y$: dependent variable, output,  outcome, endogeneous variable, left hand side variable
+
+## Other types of variables
+
+1.	mediating variables
+2.	conditioning or moderating variables
+3.	confounding variables
+4.	instrumental variables
+
+## Mediating variables
+
+```{r, echo = FALSE, out.height="50%", fig.width=2, fig.height=1, fig.align='center'}
+plot(make_model("X -> M -> Y"))
+```
+
+* "Oil wealth produces grievances which induces conflict"  
+
+## Conditioning or moderating variables
+
+
+```{r, echo = FALSE, out.height="50%", fig.width=2, fig.height=1, fig.align='center'}
+plot(make_model("X -> Y <- W"))
+```
+
+* e.g.  "The effect of oil wealth on conflict is weaker when institutions are strong"
+
+## Variables might mediate *and* moderate
+
+```{r, echo = FALSE, out.height="50%", fig.width=2, fig.height=1, fig.align='center'}
+plot(make_model("M<-X -> Y <-M"))
+```
+
+* "Oil wealth produces grievances which induces conflict"  
+* "There are many other channels through which oil wealth affects conflict and which exacerbate the effects of grievances" 
+
+## Confounding variables
+
+
+```{r, echo = FALSE, out.height="50%", fig.width=2, fig.height=1, fig.align='center'}
+library(CausalQueries)
+plot(make_model("X<-W -> Y <- X"))
+```
+
+
+* "The effect of education on voting behavior is hard to assess because wealth affects both education and voting behavior"
+
+## Instrumental variables
+
+
+```{r, echo = FALSE, out.height="50%", fig.width=2, fig.height=1, fig.align='center'}
+library(CausalQueries)
+plot(make_model("X<-W -> Y <- X<-Z"))
+```
+
+"It's hard to assess the effect of military service on future earnings because of individual characteristics that might explain both. But date of birth affects the chances of serving and so can be used to recover estimates of service on earnings."
+
+

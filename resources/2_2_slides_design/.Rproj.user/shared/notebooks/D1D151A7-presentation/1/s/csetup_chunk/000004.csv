@@ -1,0 +1,6 @@
+"0","source(""parameters.R"")
+"
+"2","cannot open file 'parameters.R': No such file or directory"
+"2","Error in file(filename, ""r"", encoding = encoding) : 
+  cannot open the connection
+"

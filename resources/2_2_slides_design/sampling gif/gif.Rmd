@@ -1,0 +1,123 @@
+---
+title: "Causal inference and experimental design"
+author: "Macartan Humphreys, Columbia University and WZB Berlin"
+date: Jan 2018
+numbersections: true
+header-includes:
+  - \usepackage{amsmath, amssymb, bbm, amstext, array, listings, mathtools, multicolumn, caption, color, graphics, ulem, caption, changepage, atbegshi, soul}
+  - \newcommand\E{\mathbb{E}}
+  - \newcommand\V{\mathbb{V}}
+  - \hypersetup{colorlinks=true,linkcolor=red}
+  - \usepackage{ulem}
+  - \usepackage{multido}
+  - \pdfstringdefDisableCommands{\let\sout\relax}
+fontsize: 11pt  
+output:
+  beamer_presentation:
+    slide_level: 2
+    keep_tex: false
+    includes:
+      in_header: include_nav.txt
+  ioslides_presentation:
+    widescreen: no
+---
+
+  
+```{r setup, include=FALSE}
+library(randomizr)
+library(knitr)
+library(magick)
+library(ggplot2)
+library(gridExtra)
+library(animation)
+
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, error = TRUE, message = FALSE, 
+                      eval = TRUE, tidy = FALSE, tidy.opts = list(width.cutoff = 50),
+                      strip_white = FALSE, results = 'asis', fix.ext = 'pdf', cache = FALSE)
+
+```
+
+
+
+```{r, echo = FALSE, comment = " "}
+set.seed(1)
+n <- 10
+Y0 <- sample(c(0,0,0,0,0,0,1,1,1,1))
+Y1 <- sample(c(0,0,0,1,1,1,1,1,1,1))
+b <- NA
+```
+
+
+```{r, comment = " ", echo = TRUE}
+Z <- complete_ra(n)  # A random assignment
+Y <- Y1*Z + Y0*(1-Z) # The outcome given this assignment
+```
+
+
+```{r, warning = FALSE, out.width="60%", fig.align='center', echo = FALSE}
+f <- function(b, main = NULL, ylim = c(0.5, 3)) stripchart(b, method="stack", offset=0.5, pch=1, xlim = c(-1, 1), ylim = ylim, main = main)
+b <- c(b, mean(Y1[Z==1] - Y0[Z==0]))
+
+maintitle = "Estimated effect: "
+maxs <- 20
+s   <- 0
+```
+
+
+```{r , echo=FALSE}
+
+# Create table
+
+img <- image_graph(600, 400, res = 96)
+set.seed(1)
+for(i in 1:maxs){
+Z <- complete_ra(n)
+mytable <- data.frame(rbind(Z, Y = Y1*Z + Y0*(1-Z)))
+colnames(mytable) <-  1:n
+p <- qplot(1:5, 1:5, geom = "blank") + theme_minimal() + theme(line = element_blank(), text = element_blank()) +
+annotation_custom(grob = tableGrob(mytable, theme = ttheme_default( padding = unit(c(5, 5), "mm")))   ) 
+print(p)
+}
+invisible(dev.off())
+ (animation <- image_animate(img, fps = 1))
+
+image_write(animation, "tab.gif")
+
+
+img <- image_graph(600, 400, res = 96)
+set.seed(1)
+for(i in 1:maxs){
+  ate <- mean(Y1[Z==1] - Y0[Z==0])
+  Z <- complete_ra(n)
+  b <- c(b, mean(Y1[Z==1] - Y0[Z==0]))
+  f(b, main = paste0(maintitle, ate)) 
+}
+  invisible(dev.off())
+ (animation <- image_animate(img, fps = 1))
+
+image_write(animation, "stripchart.gif")
+
+
+
+
+for(i in 1:maxs){
+  png(paste0("stripchart-",i, ".png"))
+  ate <- mean(Y1[Z==1] - Y0[Z==0])
+  Z <- complete_ra(n)
+  b <- c(b, mean(Y1[Z==1] - Y0[Z==0]))
+  f(b, main = paste0(maintitle, ate)) 
+   invisible(dev.off())
+}
+
+
+```
+
+\multido{\i=1+1}{9}{%
+  \begin{frame}
+    \frametitle{Title: \i}
+    \framesubtitle{Subtitle: \i}
+    \centering
+    \includegraphics[width=.9\linewidth]{stripchart-\i}
+  \end{frame}
+}
+

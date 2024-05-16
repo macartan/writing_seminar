@@ -1,0 +1,272 @@
+---
+title: "Causal inference and experimental methods"
+author: "Macartan Humphreys"
+date: Feb 2017
+numbersections: true
+header-includes:
+  - \usepackage{amsmath, amssymb, bbm, amstext, array, listings, mathtools, multicolumn, caption, color, graphics, ulem, caption, changepage, atbegshi, soul}
+  - \newcommand\E{\mathbb{E}}
+  - \newcommand\V{\mathbb{V}}
+  - \hypersetup{colorlinks=true,linkcolor=red}
+  - \usepackage{ulem}
+  - \pdfstringdefDisableCommands{\let\sout\relax}
+fontsize: 11pt  
+output:
+  beamer_presentation:
+    slide_level: 2
+    keep_tex: false
+    includes:
+      in_header: include_nav.txt
+  ioslides_presentation:
+    self_contained: yes
+    widescreen: no
+---
+  
+```{r, echo=FALSE, warnings = FALSE, message = FALSE, include = FALSE}
+rm(list = ls())
+set.seed(343)
+suppressMessages({
+  library(DeclareDesign)
+  library(xtable)
+  library(knitr)
+  library(sandwich)
+  library(lmtest)
+  library(ggplot2)
+  library(dplyr)
+  library(knitr)
+  library(randomizr)
+
+})
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, error = TRUE, message = FALSE, 
+                      eval = TRUE, tidy = FALSE, tidy.opts = list(width.cutoff = 50),
+                      strip_white = FALSE, results = 'asis', fix.ext = 'pdf', cache = TRUE)
+
+```
+
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# Sampling and statistical error
+
+## Sampling variability
+
+Say that we had a world that had potential outcomes like this:
+
+```{r, echo = FALSE, comment = " "}
+set.seed(1)
+n <- 10
+Y0 <- sample(c(0,0,0,0,0,0,1,1,1,1))
+Y1 <- sample(c(0,0,0,1,1,1,1,1,1,1))
+```
+
+```{r, echo = FALSE}
+kable(cbind(ID = 1:n,Y0,Y1))
+```
+
+**Question**: What is the average treatment effect in this world?
+**Answer**: 
+
+
+## Sampling variability
+
+Say that we had a world that had potential outcomes like this:
+
+```{r, echo = FALSE, results ='asis'}
+kable(cbind(ID = 1:n, Y0,Y1))
+```
+
+**Question**: What is the average treatment effect in this world?
+**Answer**: Average(Y1) - Average(Y0) = `r mean(Y1 - Y0)`
+
+## What might we find from an experiment?
+
+Say we select a sample of units and look at their treatment outcomes, and another sample to look at their control outcomes.
+```{r, comment = " ", echo = TRUE}
+Z <- complete_ra(n)  # A random assignment
+Y <- Y1*Z + Y0*(1-Z) # The outcome given this assignment
+```
+
+```{r, echo = FALSE}
+kable(data.frame(ID = 1:n, Y0,Y1, Z, Y))
+```
+
+## What might we find from an experiment?
+
+Estimate, caculated as difference-in-means:
+
+```{r, echo = TRUE} 
+
+mean(Y[Z==1]) - mean(Y[Z==0])
+
+```
+
+Or, using regression:
+
+```{r, echo = TRUE, eval =FALSE} 
+lm(Y~Z)
+```
+
+```{r, echo = FALSE} 
+kable(coef(summary(lm(Y~Z))), digits = 2)
+```
+
+## What might we find from an experiment?
+
+Now imagine doing this many times, with a different $Z$ each time:
+
+```{r, echo = FALSE}
+
+b <- NA
+
+Z <- complete_ra(n)
+
+```
+
+```{r}
+kable(rbind(Z, Y = Y1*Z + Y0*(1-Z)), col.names = 1:n)
+```
+
+With a different allocation each time we get a difference estimated effect each time: `r mean(Y1[Z==1] - Y0[Z==0])`
+
+## What might we find from an experiment?
+
+Plotted:
+
+```{r, warning = FALSE, out.width="60%", fig.align='center', echo = FALSE}
+f <- function(b, main = NULL, ylim = c(0.5, 3)) stripchart(b, method="stack", offset=0.5, pch=1, xlim = c(-1, 1), ylim = ylim, main = main)
+b <- c(b, mean(Y1[Z==1] - Y0[Z==0]))
+
+maintitle = "Possible estimates"
+maxs <- 20
+s   <- 0
+```
+
+```{r, echo = FALSE}
+f(b, main = maintitle)
+```
+
+
+```{r child="sampling_variability.Rmd", echo=FALSE}
+```
+
+```{r, echo = FALSE}
+b1 <- b
+b <- NA
+Y1 <- Y0
+s   <- 0
+maintitle <- "Possible estimates | Null"
+```
+
+# What might we find if there were no effect?
+
+
+```{r child="sampling_variability.Rmd", echo=FALSE}
+```
+
+
+## Compare
+
+```{r, echo = FALSE}
+par(mfrow = c(2,1))
+f(b, main = "Null")
+f(b1,main =  "Expected")
+```
+
+## How would this look with more data?
+
+```{r, echo = FALSE}
+n <- 50
+Y0 <- rbinom(n, 1, p = .4)
+Y1 <- rbinom(n, 1, p = .7)
+Zs <- replicate(1000, complete_ra(n))
+b0 <- sapply(1:ncol(Zs), function(i) mean(Y0*(Zs[,i]==1) - mean(Y0*(Zs[,i]==0))))
+b1 <- sapply(1:ncol(Zs), function(i) mean(Y1*(Zs[,i]==1) - mean(Y0*(Zs[,i]==0))))
+
+par(mfrow = c(2,1))
+hist(b0, xlim = c(-1,1)/2, main = "Null: 50"); box()
+hist(b1, xlim = c(-1,1)/2, main = "Expected: 50"); box()
+
+```
+
+## How would this look with more data?
+
+```{r, echo = FALSE}
+n <- 200
+Y0 <- rbinom(n, 1, p = .4)
+Y1 <- rbinom(n, 1, p = .7)
+Zs <- replicate(1000, complete_ra(n))
+b0 <- sapply(1:ncol(Zs), function(i) mean(Y0*(Zs[,i]==1) - mean(Y0*(Zs[,i]==0))))
+b1 <- sapply(1:ncol(Zs), function(i) mean(Y1*(Zs[,i]==1) - mean(Y0*(Zs[,i]==0))))
+
+par(mfrow = c(2,1))
+hist(b0, xlim = c(-1,1)/2, main = "Null: 200"); box()
+hist(b1, xlim = c(-1,1)/2, main = "Expected: 200"); box()
+```
+
+## Power
+
+You can read statistical power right off these graphs. 
+
+* From the top graph you can see the probability of getting any type of effect, under the null. 
+* From the bottom graph you can see the probability of getting any such effect
+
+```{r, warning = FALSE, out.width="70%", fig.align='center', echo = FALSE}
+
+par(mfrow = c(2,1))
+hist(b0, xlim = c(-1,1)/2, main = "Null: 200"); box();  abline(v = quantile(b0, .975), col = "red")
+
+hist(b1, xlim = c(-1,1)/2, main = "Expected: 200"); box(); abline(v = quantile(b0, .95), col = "red")
+
+text(.35, 40, paste("Power = ", mean(b1 >= quantile(b0, .975))))
+```
+
+## Power
+
+More generally this power depends on:
+
+* How many units you have
+* How big the effect is
+* How noisy the process is
+
+For a clustered design, power depends on how many clusters there are and how similar units are within clusters
+
+* In general the more clusters the better
+* The more dissimilar units are within clusters the better
+
+Power also depends on variability from randomization. Blocking helps.
+
+* In general the more blocks the better the better
+* The more similar units are within blocks the better
+
+
+## Small Effects
+
+```{r, warning = FALSE, out.width="80%", fig.align='center'}
+library(pwr)
+p.t.two <- pwr.t.test(d=.1, power=0.8, type="two.sample", alternative="two.sided")
+plot(p.t.two)
+```
+
+## Bigger effects
+
+```{r, warning = FALSE, out.width="80%", fig.align='center'}
+library(pwr)
+p.t.two <- pwr.t.test(d=.3, power=0.8, type="two.sample", alternative="two.sided")
+plot(p.t.two)
+```
+
+
+## Power Calculators
+
+There are many power calculators.  
+
+* Most are quite rudimentary. 
+* For cluster designs with binary or continuous outcomes, see \url{https://egap.shinyapps.io/Power_Calculator/}
+* But you can simulate *any* design and estimate power for any quantity
+
+## Power Calculators \url{https://egap.shinyapps.io/Power_Calculator/}
+
+
+\includegraphics[width=17.2cm]{calc.png}

@@ -1,0 +1,173 @@
+---
+title: "Causal inference and experimental methods"
+author: "Macartan Humphreys"
+numbersections: true
+header-includes:
+  - \usepackage{amsmath, amssymb, bbm, amstext, array, listings, mathtools, multicolumn, caption, color, graphics, ulem, caption, changepage, atbegshi, soul, xcolor}
+  - \newcommand\E{\mathbb{E}}
+  - \newcommand\V{\mathbb{V}}
+  - \hypersetup{colorlinks=true,linkcolor=red}
+  - \usepackage{ulem}
+  - \pdfstringdefDisableCommands{\let\sout\relax}
+fontsize: 11pt  
+output:
+  beamer_presentation:
+    slide_level: 2
+    keep_tex: false
+    includes:
+      in_header: include_nav.txt
+  ioslides_presentation:
+    self_contained: yes
+    widescreen: no
+---
+
+
+## Take home ideas
+
+1. Random **assignment** to treatment is random **sampling** from alternative universes.  
+
+
+## Causal claims: The estimand and the rub
+
+The simplest estimand is the \color{red}case level causal effect\color{black}.
+
+\begin{itemize}
+	\item  The causal effect of Treatment (relative to Control) is:
+	$$ \tau_i = Y_i(1) - Y_i(0)$$
+	\item This is what we want to estimate 
+\end{itemize}
+
+
+## Causal claims: The estimand and the rub
+
+The simplest estimand is the \color{red}case level causal effect\color{black}.
+
+\begin{itemize}
+	\item  The causal effect of Treatment (relative to Control) is:
+	$$ \tau_i = Y_i(1) - Y_i(0)$$
+	\item This is what we want to estimate 
+	\item BUT: We never can observe both $Y_i(1)$ and $Y_i(0)$!
+	\item This is called the \textbf{fundamental problem of causal inference} (Holland)
+\end{itemize}
+
+
+## Causal claims: The rub and the solution
+\begin{itemize} \small
+	\item  Now for some magic. We really want to estimate:	$$\tau_i = Y_i(1) - Y_i(0)$$
+but we cannot
+	\item Say we lower our sights and try to estimate an \textbf{average} treatment effect:
+	$$ \tau = E(Y(1)-Y(0))$$
+	\item Now make use of the fact that 
+$$E(Y(1)-Y(0)) = E(Y(1))-E(Y(0)) $$
+\item In words: \textit{The average of differences is equal to the difference of averages}
+
+\item The {\color{red} good news} is that \textit{while we can't hope to measure the differences; we are good at measuring averages}.   
+\end{itemize}
+
+
+
+## Causal claims: The rub and the solution
+* So we want to estimate $E(Y(1))$ and $E(Y(0))$. 
+* We know that we can estimate averages of a quantity by taking the average value from a **random sample** of units
+* So one approach is to to select a random sample of the $Y(1)$ values and a random sample of the $Y(0)$ values, in other words, we \textbf{randomly assign} subjects to conditions.
+* When we do that we can in fact estimate:
+	$$E(Y_i(1) | Z_i = 1) - E(Y_i(0) | Z_i = 0)$$ 
+	which in expectation equals:
+	$$ E(Y_i(1) | Z_i = 1 \text{ or } Z_i = 0) - E(Y_i(0) | Z_i = 1 \text{ or } Z_i = 0)$$ 
+
+*	This highlights a deep connection between **random assignment** and **random sampling**
+
+
+<!-- ##  For some this assignment is **definitional** of experiments -->
+
+<!-- The **random assignment** is critical here. In fact the assignment is, for some, **definitional** to an experiment. -->
+
+<!-- \begin{itemize} -->
+<!-- 	\item Experiments are investigations in which an intervention, in all its essential elements, is under the control of the investigator. (Cox \& Reid) -->
+<!-- 	\item Two major types of control: -->
+<!-- 		\begin{enumerate} -->
+<!-- 			\item control over assignment to treatment -- this is at the heart of many field experiments  -->
+<!-- 			\item control over the treatment itself -- this is at the heart of many lab experiments -->
+<!-- 		\end{enumerate} -->
+<!-- 	\item  Main focus today is on 1 and on the question: \textit{how does control over assignment to treatment allow you to make reasonable statements about causal effects?} -->
+<!-- \end{itemize} -->
+
+
+<!-- ## Experiments -->
+
+<!-- \begin{figure}[h] -->
+<!-- \centering -->
+<!-- \includegraphics[width=\linewidth]{labfield} -->
+<!-- \end{figure} -->
+
+
+
+## How randomization helps
+This provides a \textbf{positive argument }for causal inference from randomization, rather than simply saying with randomization ``everything else is controlled for''
+
+\color{red} Let's discuss: \color{black} 
+\begin{itemize}
+	\item Does the fact that an estimate is unbiased mean that it is right?
+  \item Can a randomization ``fail''?
+	\item Where are the covariates?
+\end{itemize}
+
+\color{red} \textbf{Idea}: random assignment is random sampling from potential worlds: to understand anything you find, you need to know the sampling weights
+
+
+
+```{r,eval=TRUE, echo = FALSE}
+po.graph = function(N, Y0,Y1,u, Z, yl = "Y(0) & Y(1)"){
+par(mfrow=c(2,2))
+plot(u, Y0, ylim=c(-3, 4), xlim=c(1,N), xlab="u", ylab=yl)
+  lines(u, Y1, type = "p", col="red")
+  title("Y(1) and Y(0) for all units ")
+plot(u, Y1-Y0, type = "h", ylim=c(-3, 4), xlim=c(1,N),main = "Y(1) - Y(0)", xlab="u", ylab=yl)
+  abline(h=0, col="red"); abline(h=mean(Y1-Y0), col="red")
+plot(u[Z==0], Y0[Z==0], ylim=c(-3, 4), xlim=c(1,N), main = "Y(1| Z=1) and Y(0| Z=0)", xlab="u", ylab=yl)
+  abline(h=mean(Y0[Z==0]))
+  lines(u[Z==1], Y1[Z==1], type = "p", col="red")
+  abline(h=mean(Y1[Z==1]), col="red")
+plot(u[Z==0&u<=N/2], Y0[Z==0&u<=N/2], ylim=c(-3, 4), xlim=c(1,N), 
+     main = "Subgroup ATEs", xlab="u", ylab = yl)
+  segments(0, mean(Y0[Z==0 & u<=N/2]), N/2, mean(Y0[Z==0 & u<=N/2]), lwd =  1.3)
+  lines(u[Z==1 & u<=N/2], Y1[Z==1 & u<=N/2], type="p",ylim=c(-3, 4), col="red")
+  segments(0, mean(Y1[Z==1 & u<=N/2]), N/2, mean(Y1[Z==1 & u<=N/2]), lwd =  1.3, col="red")
+  lines(u[Z==0 & u>N/2], Y0[Z==0 & u>N/2], type = "p", ylim=c(-3, 4), xlim=c(1,N))
+  segments(1+N/2, mean(Y0[Z==0 & u>N/2]), N, mean(Y0[Z==0 & u>N/2]), lwd =  1.3)
+  points(u[Z==1 & u>N/2], Y1[Z==1 & u>N/2], type="p", ylim=c(-3, 4), col="red")
+  segments(1+N/2, mean(Y1[Z==1 & u>N/2]), N, mean(Y1[Z==1 & u>N/2]), lwd =  1.3, col="red")
+	}
+
+N  <- 100
+u  <- seq(1:N)
+Y0 <- rnorm(N)
+Y1 <- rnorm(N) + 1
+Z  <- 1:N %in% sample(N, N/2)
+```
+
+
+## Potential outcomes: why randomization works
+The average of the differences $\approx$ difference of averages
+(and exactly equal "in expectation").
+
+```{r,eval=TRUE, echo = FALSE, fig.width = 14, fig.height= 7}
+po.graph(N, Y0, Y1, u, Z)	
+```
+
+
+<!-- ## Potential outcomes: heterogeneous effects -->
+<!-- The average of the differences $\approx$ difference of averages -->
+<!-- ```{r,eval=TRUE, echo = TRUE, fig.width = 14, fig.height= 7} -->
+<!-- po.graph(N, Y0 - u/50, Y1+u/50, u,Z) -->
+
+
+## For discussion:
+
+
+How does the approach here relate to Mill's "method of difference"?
+
+> If an instance in which the phenomenon under investigation occurs, and an instance in which it does not occur, have every circumstance save one in common, that one occurring only in the former; the circumstance in which alone the two instances differ, is the effect, or cause, or an indispensable part of the cause, of the phenomenon.
+
+John Stuart Mill (1843) *A System of Logic, Vol. 1.*
+

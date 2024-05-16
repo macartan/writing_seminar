@@ -1,0 +1,141 @@
+---
+title: "Other quantitative methods"
+author: "Macartan Humphreys"
+numbersections: true
+header-includes:
+  - \usepackage{amsmath, amssymb, bbm, amstext, array, listings, mathtools, multicolumn, caption, color, graphics, ulem, caption, changepage, atbegshi, soul, xcolor, CasualQueries}
+  - \newcommand\E{\mathbb{E}}
+  - \newcommand\V{\mathbb{V}}
+  - \hypersetup{colorlinks=true,linkcolor=red}
+  - \usepackage{ulem}
+  - \pdfstringdefDisableCommands{\let\sout\relax}
+fontsize: 11pt  
+output:
+  beamer_presentation:
+    slide_level: 2
+    keep_tex: false
+    includes:
+      in_header: include_nav.txt
+  ioslides_presentation:
+    self_contained: yes
+    widescreen: no
+---
+
+## Recap: Differences in means worked when we had randomization
+
+* We want to estimate: $$\frac1n\sum_i((Y_i(1)) - Y_i(0))$$
+
+* We estimate using: $$\frac1{n_t}\sum_{i \in T}Y_i - \frac1{n_c}\sum_{i \in C}Y_i$$
+
+* This works because, with randomization $\frac1{n_t}\sum_{i \in T}Y_i =  \frac1n\sum_i((Y_i(1))$ *in expectation* -- that is, on average the sample average is the population average. Similarly $\frac1{n_c}\sum_{i \in C}Y_i =  \frac1n\sum_i((Y_i(0))$ *in expectation*.
+
+
+## But in the absence of randomization there are inferential risks
+
+Difficulties once assignment is related to potential outcomes.
+
+
+
+```{r, echo = FALSE, out.height="50%", fig.width=2, fig.height=1, fig.align='center', fig.cap = "Here X might be related to Y even though it does not cause Y"}
+plot(make_model("X<-W -> Y"))
+```
+
+
+## In fact in the absence of randomization a model is *required* 
+
+* Randomization is **not required** for causal inference.
+
+* But without it you need some alternative argument for why your estimates from the treatment group capture *what would occur in the control group* if they were treated (and vice versa)
+
+* What's more you will need a **model**:
+
+    * Some variables might *have* to be taken into account in order to ensure no confounding
+    * Some variables might *have* to *not* be taken into account in order to ensure no confounding
+    * Sometimes these might be the same variables!   
+    
+
+## In the absence of randomization a model is *required* 
+
+This is shown by Pearl (1995):
+
+```{r, echo = FALSE, fig.width = 6, fig.height = 4,  fig.align="center", out.width='.9\\textwidth'}
+source("../code/hj_dag.R")
+par(mar=c(1,1,1,1))
+hj_dag(x = c(-1, 0, -1, 1, 3),
+       y = c(0, 2, 4, 1, 2),
+       names = c( expression(paste(U[2])),
+         "Z", expression(paste(U[1])), "X", "Y" ),
+       arcs = cbind( c(1, 3, 1, 3, 4, 2),
+                     c(2, 2, 4, 5, 5, 4)),
+       title = "Z is a confound but controlling for it can induce bias",
+       padding = .4, contraction = .15) 
+
+```
+
+
+## Alternatives
+
+Randomization provides a very useful benchmark. Other strategies seek to approximate the magic of randomization:
+
+* **Experimental Control** seeks to ensure that *ceteris* is *paribus* (induced unit homogeneity)
+* **Adjustments**. Controlling: Regression,  Matching and Weighting
+* **Instrumental variables** or **Natural experiments**---seeks a shock that approximates randomization. 
+* **Difference in differences**---assumes that once you account for common time trends cases are as-if randomized
+* **Regression discontinuity**---assumes that cases are as-if randomized *around a threshold* (there are also motivations for RDD that do not assume as-if randomization) 
+* **Synthetic Matching** and other model based approaches
+
+## Adjustment methods Intuition
+
+Key idea is to figure out effects *conditional* on the values others nodes my take.
+
+Our problem:
+
+
+```{r, echo = FALSE, out.height="50%", fig.width=2, fig.height=1, fig.align='center'}
+library(CausalQueries)
+plot(make_model("X<-W -> Y <- X"))
+```
+
+
+
+Our solution:
+
+$$X \rightarrow Y \>\>\> \> (\text{given }W = 0)$$
+$$X \rightarrow Y \>\>\> \> (\text{given }W = 1)$$
+We can estimate effects *within* similar sets and then average the results (weighting by the size of the sets) 
+
+## RDD Intuition:
+
+e.g. compare units in which the margin of victory was 1 vote for democrats against those for which it was -1. We expect that these are approximately identical, on average, is *all* regards and get an estimate of the effect of victory on some outcome *at the threshold*
+
+```{r, echo  = FALSE, out.width="66%"}
+
+x = seq(-1, 1, .01)
+y = x+ rnorm(length(x))/10 + (x<0)/2 + .4*(x<0)*x
+plot(x,y, xlab = "x: running variable (treatment if x>0)")
+abline(a = 0, b = 1.1, col = "lightgreen")
+abline(a = 0.5, b = 1.4, col = "lightblue")
+```
+
+
+
+
+## Diff-in-diff Intuition:
+
+* examine the difference between treated and control in the before-after difference
+* OK under the assumption that the change in the control group is the same as what the change would have been in the treatment group absent treatment
+
+```{r, echo  = FALSE, out.width="66%"}
+
+df <- fabricate(N =2,
+          date = c(-1, 1),
+          y_control = date + 1,
+          y_treatment = date + 2 + (date==1)*1,
+          y_control_counterfactual = date + 2) %>%
+  gather("var", "value", - date, -ID)
+
+
+ggplot(df, aes(date, value, color = var)) + geom_line()  + geom_point()
+
+```
+

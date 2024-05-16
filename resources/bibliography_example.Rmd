@@ -1,0 +1,14 @@
+---
+title: "test bibliography"
+author: Macartan
+output: word_document
+bibliography: bib.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+@putnam2000bowling is fantastic
+
+yada

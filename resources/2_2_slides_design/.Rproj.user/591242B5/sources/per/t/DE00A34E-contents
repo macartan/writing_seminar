@@ -1,0 +1,93 @@
+---
+title: "Design Declaration"
+author: "Macartan Humphreys"
+numbersections: true
+header-includes:
+  - \usepackage{amsmath, amssymb, bbm, amstext, array, listings, mathtools, multicolumn, caption, color, graphics, ulem, caption, changepage, atbegshi, soul}
+  - \newcommand\E{\mathbb{E}}
+  - \newcommand\V{\mathbb{V}}
+  - \hypersetup{colorlinks=true,linkcolor=red}
+  - \usepackage{ulem}
+  - \pdfstringdefDisableCommands{\let\sout\relax}
+fontsize: 11pt  
+output:
+  beamer_presentation:
+    slide_level: 2
+    keep_tex: true
+    includes:
+      in_header: include_nav.txt
+  ioslides_presentation:
+    self_contained: yes
+    widescreen: no
+---
+  
+```{r, echo=FALSE, warnings = FALSE, message = FALSE, include = FALSE}
+rm(list = ls())
+set.seed(343)
+suppressMessages({
+  library(DeclareDesign)
+  library(xtable)
+  library(knitr)
+  library(sandwich)
+  library(lmtest)
+  library(ggplot2)
+  library(dplyr)
+  library(knitr)
+  library(CausalQueries)
+
+
+})
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, error = TRUE, message = FALSE, 
+                      eval = TRUE, tidy = FALSE, tidy.opts = list(width.cutoff = 50),
+                      strip_white = FALSE, results = 'asis', fix.ext = 'pdf', cache = FALSE)
+
+library(randomizr)
+```
+
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Design declaration of a simple RCT
+
+```{r, echo = TRUE}
+simple_design <- 
+  
+  # M: model
+  declare_population(N = 100, u = rnorm(N)) +
+  declare_potential_outcomes(Y ~ 0.25*Z + u) +
+  
+  # I: inquiry: the average effect
+  declare_estimand(PATE = mean(Y_Z_1 - Y_Z_0)) +
+  
+  # D: data strategy
+  declare_sampling(n = 50) +       # sampling
+  declare_assignment(prob = 0.5) + # assignment
+  declare_reveal(Y, Z) +           # observed Y|Z 
+  
+  # A: answer strategy
+  declare_estimator(Y ~ Z, estimand = "PATE")
+```
+
+## Design diagnosis
+
+If you then "run" this design many times you can see the distribution of the "true" answers, the distribution of the estimates, and how these relate to each other.
+
+```{r}
+# diagnosis <- diagnose_design(simple_design)
+# write_rds(diagnosis, "../code/diagnosis.rds")
+
+diagnosis <- read_rds("../code/diagnosis.rds")
+
+diagnosis %>% reshape_diagnosis() %>% select("Estimand Label", "Bias", "RMSE", "Power", "Coverage") %>% kable
+```
+
+
+## Design library
+
+You can explore some designs here:
+
+* https://declaredesign.org/library/
+* https://eos.wzb.eu/ipi/DDWizard/
+* https://declaredesign.org/blog/2020-01-08-dding-on-the-internets.html

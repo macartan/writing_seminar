@@ -1,0 +1,144 @@
+---
+title: "Hypotheses"
+author: "Macartan Humphreys"
+date: Feb 2017
+numbersections: true
+header-includes:
+  - \usepackage{amsmath, amssymb, bbm, amstext, array, listings, mathtools, multicolumn, caption, color, graphics, ulem, caption, changepage, atbegshi, soul}
+  - \newcommand\E{\mathbb{E}}
+  - \newcommand\V{\mathbb{V}}
+  - \hypersetup{colorlinks=true,linkcolor=red}
+  - \usepackage{ulem}
+  - \pdfstringdefDisableCommands{\let\sout\relax}
+fontsize: 11pt  
+output:
+  beamer_presentation:
+    theme: "AnnArbor"
+    colortheme: "seahorse"
+    slide_level: 2
+    keep_tex: false
+    includes:
+      in_header: include_nav.txt
+  ioslides_presentation:
+    self_contained: yes
+    widescreen: no
+---
+    
+```{r, echo=FALSE, warnings = FALSE, message = FALSE, include = FALSE}
+```
+
+## Roadmap 
+* What a hypothesis is
+* What makes for a good hypothesis
+* Accepting or rejecting hypotheses
+
+
+
+## Take home ideas \label{ideas}
+
+* You don't need them, but stating expectations in terms of hypotheses provides *discipline* to a research project.
+
+* Hypotheses are statements about the world that you seek to *reject*
+
+* A good hypothesis is simple and falsifiable
+
+* A $p$ value is the probability of data like what you see under some particular hypothesis
+
+
+## Characteristics of  good hypotheses
+
+* They  are  possibly TRUE or FALSE
+* They  are  **falsifiable**
+* They are statements about **the world**, not your analysis
+* They are simple (not double barreled)
+* They involve clear concepts
+* They are **few**, and they are motivated
+* They are **contested**: You will learn something whether the data supports them or rejects them. Most importantly: you are not sure if they are true or false
+* They are numbered, and maybe even named
+
+## Some hypotheses
+
+Consider these:
+
+* Education is very important
+* Education increases your income
+* Education either increases, decreases, or has no effect on your income
+* Education  is good for you because it  strengthens your character in  very fundamental ways that you could never measure
+
+Now:
+
+* Just one of these is not a hypothesis. Which one?
+* Just one of these is  a good hypothesis. Which one?
+
+<!-- ## Some more bad ones -->
+
+<!-- **H1**: The election of Donald Trump will have a big  effect on world security because it will make many world leaders uncertain about whether the US will support them in case of attack and by increasing  competition over natural resources -->
+
+<!-- **H2** The election of Donald Trump will have no statistically significant effect on world security -->
+
+<!-- What is wrong with these? -->
+
+## Nulls: A point of confusion
+
+Because of an unusual convention, social scientists often describe hypotheses in terms of what they **expect** but then *test* the null hypothesis of no effect
+
+eg:
+
+* H1: Competition reduces prices
+* H-null: Competition has no effect on prices
+
+**Test**: how likely is the data given the null
+
+\color{red} A $p$ value is *the probability of data like what you see under some particular hypothesis*
+
+## Estimation
+
+* Sometimes we just want to figure something out: How big is the effect of an intervention?
+* You can state this **estimation** question without giving a formal hypothesis
+* Even still, some logic of hypothesis testing will often be used to assess your results, for example to construct confidence intervals
+
+
+## Tests: Hypotheses  often rejected, sometimes maintained, but  rarely accepted
+
+In the classical approach to testing a hypothesis we ask:
+
+**How likely are we to see  data like this if the hypothesis is true?** 
+
+* If the answer is "not very likely" then we treat the hypothesis as suspect.
+* If the answer is *not* "not very likely" then the hypothesis is maintained (some say "accepted" but this is tricky as you may  want to "maintain" multiple incompatible hypotheses)
+
+How unlikely is "not very likely"
+
+## Weighing Evidence
+When we test a hypothesis we decide first on what sort of evidence we need to see in order to decide that the hypothesis is not reliable.
+
+**Othello** has a hypothesis that Desdemona is innocent. **Iago** confronts him with evidence:
+
+* See how she looks at him: would she look a him like that if she were innocent?
+* See how she defends him: would she defend him like that if she were innocent?
+* See he carries her handkerchief: would he have her handkerchief if she were innocent?
+* Othello, the chances of all of these things arising if she were innocent is surely less than 5%
+
+## Hypotheses are often rejected, sometimes maintained, but  rarely accepted
+
+Note that Othello is focused on the probability of the events if she were innocent but not the probability of the events if Iago were trying to trick him.
+
+He is not directly assessing his belief in whether she is faithful, but rather how likely the data would be if she were faithful.
+
+That is, he assesses:
+$$\Pr(\text{Data} | \text{Hypothesis is TRUE})$$
+
+not
+
+$$\Pr(\text{Hypothesis is TRUE} | \text{Data})$$
+
+<!-- ## Not Bayes -->
+
+<!-- Note: $Pr(\text{Data} | \text{Hypothesis is TRUE})$ and $Pr(\text{Hypothesis is TRUE} | \text{Data})$ are connected but in a slightly complex way (Bayes Rule): -->
+
+<!-- $$\Pr(\text{H} | \text{D}) = \frac{\Pr(\text{D} | \text{H})\Pr(\text{H})}{\Pr(\text{D} | \text{H })\Pr(\text{H}) + \Pr(\text{D} | \text{NOT H})\Pr(\text{NOT H})}$$ -->
+
+<!-- So your belief about the hypothesis should depend not just on the likelihood of seeing the data given the hypothesis but also on your prior belief about how plausible the hypothesis is. But this second part is ignored in classical tests. -->
+
+
+

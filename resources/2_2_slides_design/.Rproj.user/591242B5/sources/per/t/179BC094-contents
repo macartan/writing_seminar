@@ -1,0 +1,147 @@
+---
+title: "Questions and Answers"
+author: "Macartan Humphreys, Honors Seminar"
+numbersections: true
+header-includes:
+  - \usepackage{amsmath, amssymb, bbm, amstext, array, listings, mathtools, multicolumn, caption, color, graphics, ulem, caption, changepage, atbegshi, soul}
+  - \newcommand\E{\mathbb{E}}
+  - \newcommand\V{\mathbb{V}}
+  - \hypersetup{colorlinks=true,linkcolor=red}
+  - \usepackage{ulem}
+  - \pdfstringdefDisableCommands{\let\sout\relax}
+fontsize: 11pt  
+output:
+  beamer_presentation:
+    slide_level: 2
+    keep_tex: false
+    includes:
+      in_header: modules/include_nav.txt
+  ioslides_presentation:
+    self_contained: yes
+    widescreen: no
+---
+  
+```{r, echo=FALSE, warnings = FALSE, message = FALSE, include = FALSE}
+rm(list = ls())
+set.seed(343)
+suppressMessages({
+  library(DeclareDesign)
+  library(xtable)
+  library(knitr)
+  library(sandwich)
+  library(lmtest)
+  library(ggplot2)
+  library(dplyr)
+  library(tidyverse)
+  library(knitr)
+  library(randomizr)
+
+})
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, error = TRUE, message = FALSE, 
+                      eval = TRUE, tidy = FALSE, tidy.opts = list(width.cutoff = 50),
+                      strip_white = FALSE, results = 'asis', fix.ext = 'pdf', cache = FALSE)
+```
+
+
+
+```{css, echo=FALSE}
+def.chunk.hook  <- knitr::knit_hooks$get("chunk")
+knitr::knit_hooks$set(chunk = function(x, options) {
+  x <- def.chunk.hook(x, options)
+  ifelse(options$size != "normalsize", paste0("\n \\", options$size,"\n\n", x, "\n\n \\normalsize"), x)
+})
+```
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+# Design overview
+
+## MIDA
+
+The four elements of  a design:
+
+\begin{itemize}
+
+\item[M] Your model. How you think the world works  
+\item[I] Your inquiry: The question you want to ask of the world
+\item[D] Your data strategy: how you plan to gather data from the world: this includes interventions and measurement
+\item[A] Your answer strategy: the conclusions you will draw once you have data
+\end{itemize}
+
+If you can define a MIDA design then you have provided enough information to assess the quality of your design. 
+[This design framework is discussed here \url{http://declaredesign.org/paper.pdf}]
+
+
+## MIDA
+
+We are going to talk about:
+
+* Models
+* Inquiries
+* Quantitative data and answer strategies (Monday)  
+* Qualitative data and answer strategies (Tuesday)  
+
+
+# Models: Nodes and graphs 
+
+```{r child="modules/_nodes_and_claims.Rmd", echo=FALSE}
+```
+
+# Models: The arguments 
+
+```{r child="modules/_an_argument.Rmd", echo=FALSE}
+```
+
+# Inquiries: Causal claims 
+
+```{r child="modules/_causality.Rmd", echo=FALSE}
+```
+
+# Inquiries: Estimands
+
+```{r child="modules/_estimands.Rmd", echo=FALSE}
+```
+
+# Inquiries: Hypotheses
+
+```{r child="modules/_hypotheses.Rmd", echo=FALSE}
+```
+
+# Answers: Differences in Means with Experimental Data
+
+```{r child="modules/_differences_in_means.Rmd", echo=FALSE}
+```
+
+# Answers: Tests
+
+```{r child="modules/_tests_intro.Rmd", echo=FALSE}
+```
+
+# Data and Answers: Other Quantitative Strategies
+
+```{r child="modules/_quant_strategies.Rmd", echo=FALSE}
+```
+
+# Data and Answers: Other Qualitative Strategies
+
+```{r child="modules/_qual_strategies.Rmd", echo=FALSE}
+```
+
+# Back to MIDA: Design Evaluation
+
+```{r child="modules/_simple_design_declaration.Rmd", echo=FALSE}
+```
+
+
+# To dos
+
+* Graph your problem
+* Provide a paragraph encapsulating the theory
+* Try to define the primary estimand
+* Clarify top two or three hypotheses
+* Re-consider estimation strategy in light of estimand: does the estimator shoot at this estimand?
+
