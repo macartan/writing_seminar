@@ -87,7 +87,7 @@ Writing. People quibble but there is a lot of wisdom in @strunk2007elements:
 
 
 
-## Full refs
+## Full refs {.smaller}
 
 ```{r, echo=FALSE, results='asis'}
 library(RefManageR)
@@ -153,7 +153,7 @@ Four elements of any research design:
 ## Four elements of any research design
 
 ```{r midaplot, echo = FALSE}
-knitr::include_graphics("assets/midadag.svg")
+knitr::include_graphics("assets/mida.png")
 ```
 
 
@@ -319,7 +319,7 @@ new_design <-
 * Or add, remove, or replace steps
 
 
-## Compare designs
+## Compare designs {.smaller}
 
 ```{r, eval = FALSE, echo = TRUE}
 redesign(design, N = 50) %>%
