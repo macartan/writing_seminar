@@ -1,2 +1,0 @@
-
-dataMaid makeDataReport(data)

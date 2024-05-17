@@ -18,6 +18,7 @@ format:
     include-in-header:  
         - text: |
             \usepackage{multicol}
+            \usepackage{xcolor}
   html:
     code-fold: true
     html-math-method: katex
@@ -59,9 +60,9 @@ author:
       equal-contributor: true
       corresponding: true
 abstract: |
-  The abstract serves both as a general introduction to the topic and as a brief, non-technical summary of the main results and their implications. Authors are advised to check the author instructions for the journal they are submitting to for word limits and if structural elements like subheadings, citations, or equations are permitted.
+  The abstract serves both as a general introduction to the topic and as a brief, non-technical summary of the main results and their implications. Authors are advised to check the author instructions for the journal they are submitting to for word limits and if structural elements like subheadings, citations, or equations are permitted. 
 keywords: [template, demo]
-bibliography: bibliography.bib
+bibliography: bib.bib
 
 ---
 
@@ -69,11 +70,16 @@ bibliography: bibliography.bib
 library(tidyverse)
 library(DeclareDesign)
 library(knitr)
+library(kableExtra)
 library(modelsummary)
 ```
 \newpage
 
 # Introduction {#sec-intro}
+
+This template is based on the quarto template provided by Christopher Kenny.
+Note a range of different templates are available with various options: consult  https://github.com/christopherkenny/nature
+
 
 Your question. why we care
 
@@ -84,35 +90,26 @@ Roadmap
 
 # Motivation: Theory, Literature  {#sec-motivation}
 
+You can use \LaTeX natively. See  @eq-euclid.
 
-## Cross Referencing
-
-* To reference a figure with example label "plot", use `@fig-plot`.  @fig-1
-* Analogously, to reference a table with example label "data", use `@tbl-data`.  @tbl-simple.
-* To reference a section, such as the Introduction (@sec-intro), use `@sec-intro`.
-
-For complete information on cross referencing with Quarto, see <https://quarto.org/docs/authoring/cross-references.html>.
-
-## Citations
-
-* For a citation in parentheses use `[@greenwade93]` and for a text citation: `@greenwade93`. 
-* These render as [@greenwade93] and @greenwade93
-
-Multiple citations can be given as `[@greenwade93;@knuth1984texbook]`, producing  [@greenwade93;@knuth1984texbook]
+$$
+f(x) = -\frac{1}2(1-x)^2
+$$ {#eq-euclid}
 
 \newpage
 
-# Tables and Figures
+# Results
 
-These can be produced on the fly or imported.
+Tables and Figures can be produced on the fly or imported.
 
 ## A sample figure
 
-Produced on the fly. See @fig-1.
+Here is figure produced on the fly. See @fig-1.
+Code is shown but you would hide this by setting `echo: false`
 
 ```{r, fig-1}
 #| echo: true
-#| fig-caption: "sample figure"
+#| fig-cap: "sample figure"
 
 read_rds("data/data.rds") |>
   ggplot(aes(X, Y)) + geom_point()
@@ -122,7 +119,7 @@ read_rds("data/data.rds") |>
 \newpage
 
 
-# A sample summary stats table
+## A sample summary stats table
 
 Produced on the fly. See @tbl-simple.
 
@@ -140,21 +137,60 @@ read_rds("data/data.rds") |>
 ```
 \newpage
 
-# A sample analysis table
+## Analysis in parallel
 
 Produced on the fly. 
+
+```{r analysis}
+#| label: analysis
+#| echo: true
+#| 
+# generate a list of models
+two_models <- 
+  list(
+  lm_robust(Y~1, data = read_rds("data/data.rds")),
+  lm_robust(Y~X, data = read_rds("data/data.rds")))
+
+
+```
+
+\newpage
+
+## Analysis output
+
+
+Then print. Here using `modelsummary`. Lots of scope for customization: https://modelsummary.com/articles/appearance.html
+
 
 ```{r tbl-ols}
 #| label: tbl-ols
 #| echo: true
 #| results: asis
 
-list(
-  lm_robust(Y~1, data = read_rds("data/data.rds")),
-  lm_robust(Y~X, data = read_rds("data/data.rds")))|>
-  modelsummary()
+# print nicely
+two_models|>
+  modelsummary(caption = ": some analyses", note = "some notes") 
 
 ```
+\newpage
+
+# Referencing and cross referencing
+
+## Cross Referencing
+
+* To reference a figure with example label "plot", use  e.g.  `@fig-plot`.  @fig-1
+* Analogously, to reference a table with example label "data", use  e.g.  `@tbl-data`.  @tbl-simple.
+* To reference a section, such as the Introduction (@sec-intro), use  e.g.  `@sec-intro`.
+* To reference an equation, same (@eq-euclid), use e.g. `@eq-euclid`.
+
+For complete information on cross referencing with Quarto, see <https://quarto.org/docs/authoring/cross-references.html>.
+
+## Citations
+
+* For a citation in parentheses use `[@putnam2000bowling]` and for a text citation: `@putnam2000bowling`. 
+* These render as [@putnam2000bowling] and @putnam2000bowling
+
+Multiple citations can be given as `[@putnam2000bowling;@blair2023research]`, producing  [@putnam2000bowling;@blair2023research]
 
 \newpage
 

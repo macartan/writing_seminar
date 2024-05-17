@@ -170,7 +170,20 @@
 %%%%
 
 \raggedbottom
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
 \usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
 \usepackage{tabularray}
 \usepackage[normalem]{ulem}
 \usepackage{graphicx}
@@ -180,6 +193,7 @@
 \newcommand{\tinytableTabularrayUnderline}[1]{\underline{#1}}
 \newcommand{\tinytableTabularrayStrikeout}[1]{\sout{#1}}
 \usepackage{multicol}
+\usepackage{xcolor}
 \makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \AtBeginDocument{%
@@ -266,6 +280,10 @@ elements like subheadings, citations, or equations are permitted.}
 
 \section{Introduction}\label{sec-intro}
 
+This template is based on the quarto template provided by Christopher
+Kenny. Note a range of different templates are available with various
+options: consult https://github.com/christopherkenny/nature
+
 Your question. why we care
 
 Your findings and the contribution
@@ -274,48 +292,22 @@ Roadmap
 
 \section{Motivation: Theory, Literature}\label{sec-motivation}
 
-\subsection{Cross Referencing}\label{cross-referencing}
+You can use \LaTeX natively. See Equation~\ref{eq-euclid}.
 
-\begin{itemize}
-\tightlist
-\item
-  To reference a figure with example label ``plot'', use
-  \texttt{@fig-plot}. Figure~\ref{fig-1}
-\item
-  Analogously, to reference a table with example label ``data'', use
-  \texttt{@tbl-data}. Table~\ref{tbl-simple}.
-\item
-  To reference a section, such as the Introduction
-  (Section~\ref{sec-intro}), use \texttt{@sec-intro}.
-\end{itemize}
-
-For complete information on cross referencing with Quarto, see
-\url{https://quarto.org/docs/authoring/cross-references.html}.
-
-\subsection{Citations}\label{citations}
-
-\begin{itemize}
-\tightlist
-\item
-  For a citation in parentheses use \texttt{{[}@greenwade93{]}} and for
-  a text citation: \texttt{@greenwade93}.
-\item
-  These render as (Greenwade 1993) and Greenwade (1993)
-\end{itemize}
-
-Multiple citations can be given as
-\texttt{{[}@greenwade93;@knuth1984texbook{]}}, producing (Knuth and
-Bibby 1984; Greenwade 1993)
+\begin{equation}\phantomsection\label{eq-euclid}{
+f(x) = -\frac{1}2(1-x)^2
+}\end{equation}
 
 \newpage
 
-\section{Tables and Figures}\label{tables-and-figures}
+\section{Results}\label{results}
 
-These can be produced on the fly or imported.
+Tables and Figures can be produced on the fly or imported.
 
 \subsection{A sample figure}\label{a-sample-figure}
 
-Produced on the fly. See Figure~\ref{fig-1}.
+Here is figure produced on the fly. See Figure~\ref{fig-1}. Code is
+shown but you would hide this by setting \texttt{echo:\ false}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -328,17 +320,17 @@ Produced on the fly. See Figure~\ref{fig-1}.
 
 \centering{
 
-\captionsetup{labelsep=none}\includegraphics{template_files/figure-pdf/fig-1-1.pdf}
+\includegraphics{my_paper_files/figure-pdf/fig-1-1.pdf}
 
 }
 
-\caption{\label{fig-1}}
+\caption{\label{fig-1}sample figure}
 
 \end{figure}%
 
 \newpage
 
-\section{A sample summary stats
+\subsection{A sample summary stats
 table}\label{a-sample-summary-stats-table}
 
 Produced on the fly. See Table~\ref{tbl-simple}.
@@ -371,9 +363,26 @@ mean Y & mean X & correlation \\
 
 \newpage
 
-\section{A sample analysis table}\label{a-sample-analysis-table}
+\subsection{Analysis in parallel}\label{analysis-in-parallel}
 
 Produced on the fly.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# generate a list of models}
+\NormalTok{two\_models }\OtherTok{\textless{}{-}} 
+  \FunctionTok{list}\NormalTok{(}
+  \FunctionTok{lm\_robust}\NormalTok{(Y}\SpecialCharTok{\textasciitilde{}}\DecValTok{1}\NormalTok{, }\AttributeTok{data =} \FunctionTok{read\_rds}\NormalTok{(}\StringTok{"data/data.rds"}\NormalTok{)),}
+  \FunctionTok{lm\_robust}\NormalTok{(Y}\SpecialCharTok{\textasciitilde{}}\NormalTok{X, }\AttributeTok{data =} \FunctionTok{read\_rds}\NormalTok{(}\StringTok{"data/data.rds"}\NormalTok{)))}
+\end{Highlighting}
+\end{Shaded}
+
+\newpage
+
+\subsection{Analysis output}\label{analysis-output}
+
+Then print. Here using \texttt{modelsummary}. Lots of scope for
+customization: https://modelsummary.com/articles/appearance.html
 
 \begin{table}
 
@@ -385,15 +394,16 @@ Produced on the fly.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{list}\NormalTok{(}
-  \FunctionTok{lm\_robust}\NormalTok{(Y}\SpecialCharTok{\textasciitilde{}}\DecValTok{1}\NormalTok{, }\AttributeTok{data =} \FunctionTok{read\_rds}\NormalTok{(}\StringTok{"data/data.rds"}\NormalTok{)),}
-  \FunctionTok{lm\_robust}\NormalTok{(Y}\SpecialCharTok{\textasciitilde{}}\NormalTok{X, }\AttributeTok{data =} \FunctionTok{read\_rds}\NormalTok{(}\StringTok{"data/data.rds"}\NormalTok{)))}\SpecialCharTok{|\textgreater{}}
-  \FunctionTok{modelsummary}\NormalTok{()}
+\CommentTok{\# print nicely}
+\NormalTok{two\_models}\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{modelsummary}\NormalTok{(}\AttributeTok{caption =} \StringTok{": some analyses"}\NormalTok{, }\AttributeTok{note =} \StringTok{"some notes"}\NormalTok{) }
 \end{Highlighting}
 \end{Shaded}
 
 \centering
-\begin{tblr}[         %% tabularray outer open
+\begin{talltblr}[         %% tabularray outer open
+entry=none,label=none,
+note{}={some notes},
 ]                     %% tabularray outer close
 {                     %% tabularray inner open
 colspec={Q[]Q[]Q[]},
@@ -415,7 +425,7 @@ AIC         &                & \num{295.7}   \\
 BIC         &                & \num{303.6}   \\
 RMSE        &                & \num{1.03}    \\
 \bottomrule
-\end{tblr}
+\end{talltblr}
 
 }
 
@@ -423,16 +433,59 @@ RMSE        &                & \num{1.03}    \\
 
 \newpage
 
+\section{Referencing and cross
+referencing}\label{referencing-and-cross-referencing}
+
+\subsection{Cross Referencing}\label{cross-referencing}
+
+\begin{itemize}
+\tightlist
+\item
+  To reference a figure with example label ``plot'', use
+  e.g.~\texttt{@fig-plot}. Figure~\ref{fig-1}
+\item
+  Analogously, to reference a table with example label ``data'', use
+  e.g.~\texttt{@tbl-data}. Table~\ref{tbl-simple}.
+\item
+  To reference a section, such as the Introduction
+  (Section~\ref{sec-intro}), use e.g.~\texttt{@sec-intro}.
+\item
+  To reference an equation, same (Equation~\ref{eq-euclid}), use
+  e.g.~\texttt{@eq-euclid}.
+\end{itemize}
+
+For complete information on cross referencing with Quarto, see
+\url{https://quarto.org/docs/authoring/cross-references.html}.
+
+\subsection{Citations}\label{citations}
+
+\begin{itemize}
+\tightlist
+\item
+  For a citation in parentheses use \texttt{{[}@putnam2000bowling{]}}
+  and for a text citation: \texttt{@putnam2000bowling}.
+\item
+  These render as (Putnam 2000) and Putnam (2000)
+\end{itemize}
+
+Multiple citations can be given as
+\texttt{{[}@putnam2000bowling;@blair2023research{]}}, producing (Putnam
+2000; Blair et al. 2023)
+
+\newpage
+
 \section{References}\label{references}
 
 \phantomsection\label{refs}
 \begin{CSLReferences}{1}{1}
-\bibitem[\citeproctext]{ref-greenwade93}
-Greenwade GD (1993) The comprehensive {TeX} {A}rchive {N}etwork
-({CTAN}). TUGBoat 14:342--351
+\bibitem[\citeproctext]{ref-blair2023research}
+Blair G, Coppock A, Humphreys M (2023) Research design in the social
+sciences: Declaration, diagnosis, and redesign. Princeton University
+Press
 
-\bibitem[\citeproctext]{ref-knuth1984texbook}
-Knuth DE, Bibby D (1984) The TeXbook. Addison-Wesley Reading
+\bibitem[\citeproctext]{ref-putnam2000bowling}
+Putnam RD (2000) Bowling alone: America's declining social capital. In:
+Culture and politics. Springer, pp 223--234
 
 \end{CSLReferences}
 
