@@ -2,7 +2,7 @@
 title: "Writing seminar | HU 2024"
 format: 
   html:
-    theme: slate
+    theme: simplex
     embed-resources: true
 ---
 
@@ -12,17 +12,19 @@ format:
 
 * [DeclareDesign bootcamp slides](https://macartan.github.io/dd_bootcamp/dd.html)
 
-* [Research design form](https://github.com/macartan/writing_seminar/tree/main)
+* [Research design form](https://github.com/macartan/writing_seminar/tree/main) in `git` files
 
-* Sample project structure in `git` https://github.com/macartan/writing_seminar/tree/main/sample_project
+* For a sample project structure see [sample project](https://github.com/macartan/writing_seminar/tree/main/sample_project) in  `git`
 
 
 # Goals
 
-Our goal is to write a paper in 6 weeks.  We will have four 5 hour group sessions plus off biweekly individual sessions in alternative weeks.
+Our goal is to write a paper in 6 weeks.  
 
 Complete with the creation of a data archive and, if relevant, a pre-registration.
-The assumption is that you do not need to do original data collection in this time frame but you do need to do analysis and writing.
+The assumption is that you do not need to do original data collection in this time frame but you have an idea and you do need to do analysis and writing.
+
+We will have four 5 hour group sessions plus off-biweekly individual sessions in alternative weeks.
 
 # The plan
 
