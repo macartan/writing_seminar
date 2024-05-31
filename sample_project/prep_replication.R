@@ -30,7 +30,9 @@ extract_code_with_chunks <- function(input_file, output_file, title = "Document"
   yaml_header <- c(
     "---",
     paste0("title: \"", title, "\""),
-    "format: html",
+    "format:",
+    "   html:",
+    "     embed-resources: true",
     "---",
     ""
   )

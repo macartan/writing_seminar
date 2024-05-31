@@ -145,11 +145,21 @@ section.footnotes::before {
 <div class="date"><h3></h3></div>
 </div>
 <div class="body">
-<pre><code class="language-r">library(tidyverse)
-library(DeclareDesign)
-library(knitr)
-library(kableExtra)
-library(modelsummary)
+<pre><code class="language-r"># Commands that are useful for extracting code and replicating results:
+# knitr::purl(&quot;my_paper.qmd&quot;)
+# knitr::spin(&quot;my_paper.R&quot;)
+
+# A tool to help with citations
+# devtools::install_github(&quot;crsh/citr&quot;)
+
+# Packages
+if (!require(pacman)) install.packages(&quot;pacman&quot;)
+pacman::p_load(
+  tidyverse,
+  DeclareDesign,
+  knitr,
+  kableExtra,
+  modelsummary)
 </code></pre>
 <pre><code class="language-"rfig-1>#| echo: true
 #| fig-cap: &quot;sample figure&quot;
