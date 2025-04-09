@@ -1,6 +1,6 @@
 ---
 title: "Writing Seminar: Orientation"
-subtitle: "May 2024"
+subtitle: "May 2025"
 author: Macartan Humphreys
 format: 
    revealjs:

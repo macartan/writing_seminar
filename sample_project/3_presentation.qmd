@@ -1,0 +1,73 @@
+---
+format: 
+   revealjs:
+      embed-resources: true
+      theme: moon
+      slide-level: 3
+      slide-number: true
+      toc-depth: 2
+      show-slide-number: all
+      preview-links: auto
+      number-sections: true
+      link-color: orange
+title: "My presentation"
+author: "Your name"
+bibliography: assets/bib.bib
+---
+
+
+
+```{r setup, include = FALSE}
+pacman::p_load(DeclareDesign,  knitr, plotly, tidyverse)
+load("saved/analysis.Rdata")
+theme_set(theme_bw())
+```
+
+# Overview
+
+* Questions and Answers
+* Data
+* Analysis
+  * Descriptives
+  * Causal Estimates
+  * Explanation
+* Discussion
+
+
+## Questions ans answers {.smaller}
+
+* One point
+* And another
+
+here is reference; try hovering over it:  @blair2023research
+
+# Tables and Figures
+
+## My figure
+
+```{r}
+#| fig-cap: "My figure caption"  
+figure_1
+```
+
+
+## My table {.smaller}
+
+```{r}
+#| results: 'asis'
+
+cat('<div style="background-color:white; color:black; padding:1em;">')
+models |> 
+  texreg:::htmlreg(include.ci = FALSE, caption = "Here is a caption for this table")
+cat('</div>')
+
+```
+
+
+# Conclusion
+
+1. this
+2. that
+
+# References
+

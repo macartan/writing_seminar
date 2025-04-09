@@ -1,0 +1,265 @@
+---
+title: "Quarto Paper Template"
+# based on christopher kennys template: https://github.com/christopherkenny/nature
+format:
+  nature-pdf:
+    journal:
+    keep-tex: false
+    number-sections: true
+    equal-margins: true
+    include-in-header:
+      text: |
+        \usepackage{lipsum}
+        \usepackage{setspace}
+        \setstretch{1.5}
+        \usepackage{etoolbox}
+        \patchcmd{\maketitle}{\thispagestyle{plain}}{\thispagestyle{empty}}{}{}
+        \AtBeginDocument{
+          \addtocounter{page}{-3} % Adjust the counter as needed
+        }
+author:
+  - name: Author One
+    affiliations:
+      - name: University
+        id: 1
+        department: Department
+        address: Street 1
+        city: City
+        postal-code: 10000
+    email: mailadress@mail.com
+    attributes:
+      corresponding: true
+  - name: Author Two
+    affiliations:
+      - name: University
+        id: 1
+        department: Department
+        address: Street 1
+        city: City
+        postal-code: 10000
+    email: mailadress@mail.com
+    attributes:
+      corresponding: true
+      equal-contributor: true
+abstract: |
+  This is the abstract text.  Give the question, why it is important, your strategy, and your headline conclusions. All up front. For a thesis the abstract can be slightly longer. Abstracts can, but typically do not, include citations.
+keywords: [Keywords, Keywords, Keywords, Keywords, Keywords]
+bibliography: assets/bib.bib
+csl: assets/american-political-science-association.csl
+---
+
+```{r base_setup}
+#| include: false
+# Thanks to Christopher Kenny for this template and to Daniel Kuhlen for further development https://github.com/danielkuhlen/academicwriting
+# Commands that are useful for extracting code and replicating results:
+# knitr::purl("paper_template.qmd")
+# knitr::spin("paper_template.R")
+
+# A tool to help with citations
+# devtools::install_github("crsh/citr")
+
+# packages ---
+if (!require(pacman)) install.packages("pacman")
+pacman::p_load(
+  tidyverse,
+  knitr,
+  DeclareDesign,
+  modelsummary,
+  rio, # import export files
+  extrafont, # fonts for plots
+  texreg
+  )
+
+
+# fonts --- 
+extrafont::loadfonts(quiet = TRUE)
+
+load("saved/analysis.Rdata")
+theme_set(theme_bw())
+
+# a helper to avoid double captions when using texreg
+tex_clean <- function(models, ...) {
+  out <- texreg::texreg(models, ..., return.string = TRUE)
+  # Remove \caption{} and \label{} lines
+  out <- gsub("\\\\caption\\{.*?\\}", "", out)
+  out <- gsub("\\\\label\\{.*?\\}", "", out)
+  out <- gsub("\\\\begin\\{center\\}", "", out)
+  out <- gsub("\\\\end\\{center\\}", "", out)
+  return(out)
+}
+
+```
+
+\newpage
+
+<!-- TABLE OF CONTENTS -->
+\tableofcontents
+\thispagestyle{empty}
+\newpage
+
+<!-- TABLE OF FIGURES AND TABLES -->
+\listoffigures
+\listoftables
+\thispagestyle{empty}
+\newpage
+
+# Introduction {#sec-intro}
+
+* The question
+* Why it is important
+* How you answer it
+* What you find
+* How the thesis is structured
+
+
+Some people use commenting in the text to ensure that each paragraph has a purpose
+
+<!-- question -->
+
+Why is it that...
+
+<!-- strategy -->
+
+To address this question I ...
+
+
+Note: Introductions conventionally do not have subsections, or figures, or tables. 
+
+# Theory
+
+Describe literature that sheds light on why your project is important, clarifying what is known or not
+
+## Cross Referencing
+
+* To reference a figure with example label "plot", use  e.g.  `@fig-plot`.  @fig-1
+* Analogously, to reference a table with example label "data", use  e.g.  `@tbl-data`.  @tbl-simple.
+* To reference a section, such as the Introduction (@sec-intro), use  e.g.  `@sec-intro`.
+* To reference an equation, same (@eq-euclid), use e.g. `@eq-euclid`.
+
+For complete information on cross referencing with Quarto, see <https://quarto.org/docs/authoring/cross-references.html>.
+
+## Citations
+
+`.bib` information is sitting in `assets/bib.bib` 
+
+* For a citation in parentheses use `[@putnam2000bowling]` and for a text citation: `@putnam2000bowling`. 
+* These render as [@putnam2000bowling] and @putnam2000bowling
+
+Multiple citations can be given as `[@putnam2000bowling;@blair2023research]`, producing  [@putnam2000bowling;@blair2023research]
+
+
+# Design
+
+## Case
+
+Why you are working on the cases you are working on
+
+## Data sources
+
+where did you get the data?
+
+## Data patterns
+
+show the data!
+
+## Analysis strategy
+
+What strategies you will use
+
+You can use \LaTeX natively. See  @eq-euclid.
+
+$$
+f(x) = -\frac{1}2(1-x)^2
+$$ {#eq-euclid}
+
+
+
+# Main results
+
+# A deeper dive
+
+Chapter could be:
+
+1. second analysis
+2. case studies
+3. alternative interpretations
+4. mechanisms
+5. heterogeneity
+6. robustness
+
+
+## A sample figure
+
+Here is figure. See @fig-1.
+
+```{r, fig-1}
+#| echo: false
+#| fig-cap: "A sample figure: Information about this figure"
+
+figure_1
+
+```
+
+
+## A table
+
+See @tbl-simple. 
+
+
+```{r}
+#| label: tbl-simple
+#| tbl-cap: "This is my table"
+#| echo: false
+#| eval: true
+#| results: 'asis'
+#| 
+
+tex_clean(models, include.ci = FALSE)
+
+```
+
+
+
+# Discussion
+
+
+# Conclusion
+
+* Recap of what was learned
+* Caveats
+* Implications: for policy, for research
+* (Perhaps: Next steps)
+
+
+Note: Conclusions conventionally do not have subsections, or figures, or tables. 
+
+\newpage
+
+# References
+
+<!-- the pattern below controls the placement of the references -->
+
+:::{#refs}
+:::
+
+\newpage
+
+\appendix
+
+# Appendixes {-}
+
+# Appendix section
+
+Details of the first appendix section.
+
+## Appendix subection 
+
+text
+
+## Another subsection
+
+text
+
+# More
+
+Text

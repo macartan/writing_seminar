@@ -1,5 +1,5 @@
 ---
-title: "Writing seminar | HU 2024"
+title: "Writing seminar | HU 2025"
 format: 
   html:
     theme: simplex

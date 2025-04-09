@@ -1,6 +1,6 @@
 # Writing seminar
 
-Our goal is to write a paper in 6 weeks. 
+Our goal is to write a paper in 8 weeks. 
 
 Complete with the creation of a data archive and, if relevant, a pre-registration.
 The assumption is that you do not need to do original data collection in this time frame but you do need to do analysis and writing.

@@ -1,0 +1,19 @@
+\documentclass[
+$if(journal.cite-style)$
+  $journal.cite-style$,
+$else$
+  default,
+$endif$
+$if(fontsize)$
+  $fontsize$,
+$endif$
+$for(classoption)$
+  $classoption$$sep$,
+$endfor$
+]{sn-jnl}
+
+$if(equal-margins)$
+\usepackage{geometry}
+\geometry{top=2.5cm, bottom=2.5cm, left=2cm, right=2.5cm} % Set all margins to 2.5cm
+\setlength{\evensidemargin}{\oddsidemargin}
+$endif$
