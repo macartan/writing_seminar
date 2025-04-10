@@ -1,0 +1,97 @@
+---
+title: "Prep for overleaf"
+format: 
+  pdf:
+    keep-tex: true
+---
+
+This file creates a simple .tex file and a folder with tables and figures that can be uploaded or synced with overleaf. Figures and Tables (tex) are saved to "exports" which can be copied directly to overleaf (or synched). The .tex file is also saved and so you can quickly extract the code for importing figures and tables and cross referencing them.
+
+```{r base_setup}
+#| include: false
+# Thanks to Christopher Kenny for this template and to Daniel Kuhlen for further development https://github.com/danielkuhlen/academicwriting
+# Commands that are useful for extracting code and replicating results:
+# knitr::purl("paper_template.qmd")
+# knitr::spin("paper_template.R")
+
+# A tool to help with citations
+# devtools::install_github("crsh/citr")
+
+# packages ---
+if (!require(pacman)) install.packages("pacman")
+pacman::p_load(
+  tidyverse,
+  knitr,
+  DeclareDesign,
+  modelsummary,
+  rio, # import export files
+  extrafont, # fonts for plots
+  texreg
+  )
+
+
+# fonts --- 
+extrafont::loadfonts(quiet = TRUE)
+
+load("saved/analysis.Rdata")
+theme_set(theme_bw())
+
+# a helper to avoid double captions when using texreg
+tex_clean <- function(models, ...) {
+  out <- texreg::texreg(models, ..., return.string = TRUE)
+  # Remove \caption{} and \label{} lines
+  out <- gsub("\\\\caption\\{.*?\\}", "", out)
+  out <- gsub("\\\\label\\{.*?\\}", "", out)
+  out <- gsub("\\\\begin\\{center\\}", "", out)
+  out <- gsub("\\\\end\\{center\\}", "", out)
+  return(out)
+}
+
+```
+
+
+## A sample figure
+
+Here is a figure. See @fig-1.
+
+```{r}
+#| include: false
+figure_1 
+
+ggsave("exports/fig-1.png", width = 8, height = 6)
+```
+
+
+```{r}
+#| label: fig-1
+#| fig-cap: "A sample figure: Information about this figure"
+#| out-width: "95%"
+#| 
+include_graphics("exports/fig-1.png")
+```
+
+
+## A table
+
+See Table \ref{tbl-simple}. 
+
+
+```{r}
+#| echo: false
+#| eval: true
+#| results: 'asis'
+#| 
+
+texreg(models, include.ci = FALSE, return.string = TRUE,
+       caption = "What it is about",
+       label = "tbl-simple") |>
+  write_lines("exports/table-1.txt")
+
+
+```
+
+
+\input{"exports/table-1.txt"} 
+
+
+

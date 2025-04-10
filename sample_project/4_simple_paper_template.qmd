@@ -10,11 +10,7 @@ format:
 date: "`r format(Sys.Date(), '%d %B %Y')`"
 author: "Your Name Here"
 thanks: \texttt{email@address}
-header-includes: |
-  \usepackage{fancyhdr}  % Package for custom page numbering
-  \usepackage{lipsum}    % Dummy text for testing (remove in final)
-  \usepackage{titling}   % Title page formatting
-  \pagenumbering{gobble}
+abstract: This is the abstract text.  Give the question, why it is important, your strategy, and your headline conclusions. All up front. For a thesis the abstract can be slightly longer. Abstracts can, but typically do not, include citations.
 bibliography: assets/bib.bib
 ---
 
@@ -34,30 +30,10 @@ tex_clean <- function(models, ...) {
 
 ```
 
-Word count: Enter here
-
-Concentration:  Enter here
 
 
 \newpage
-\pagenumbering{roman}
 
-\section*{Abstract}
-This is the abstract text.  Give the question, why it is important, your strategy, and your headline conclusions. All up front. For a thesis the abstract can be slightly longer. Abstracts can, but typically do not, include citations.
-
-\newpage
-
-\tableofcontents
-
-\newpage
-
-\section*{Acknowledgements}
-
-you can dedicate this to someone, or give a shout out to friends and family here!
-
-\newpage
-
-\pagenumbering{arabic}
 
 # Introduction {#sec-intro}
 
