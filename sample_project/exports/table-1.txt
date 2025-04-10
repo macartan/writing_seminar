@@ -1,5 +1,5 @@
 
-\begin{table}
+\begin{table}[h]
 \begin{center}
 \begin{tabular}{l c c}
 \hline

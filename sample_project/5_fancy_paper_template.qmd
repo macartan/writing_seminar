@@ -1,6 +1,6 @@
 ---
 title: "Quarto Paper Template"
-# based on christopher kennys template: https://github.com/christopherkenny/nature
+# Thanks to Christopher Kenny https://github.com/christopherkenny/nature for this template and to Daniel Kuhlen for further development https://github.com/danielkuhlen/academicwriting
 format:
   nature-pdf:
     journal:
@@ -50,7 +50,6 @@ csl: assets/american-political-science-association.csl
 
 ```{r base_setup}
 #| include: false
-# Thanks to Christopher Kenny for this template and to Daniel Kuhlen for further development https://github.com/danielkuhlen/academicwriting
 # Commands that are useful for extracting code and replicating results:
 # knitr::purl("paper_template.qmd")
 # knitr::spin("paper_template.R")

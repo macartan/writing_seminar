@@ -50,27 +50,6 @@ tex_clean <- function(models, ...) {
 ```
 
 
-## A sample figure
-
-Here is a figure. See @fig-1.
-
-```{r}
-#| include: false
-figure_1 
-
-ggsave("exports/fig-1.png", width = 8, height = 6)
-```
-
-
-```{r}
-#| label: fig-1
-#| fig-cap: "A sample figure: Information about this figure"
-#| out-width: "95%"
-#| 
-include_graphics("exports/fig-1.png")
-```
-
-
 ## A table
 
 See Table \ref{tbl-simple}. 
@@ -84,14 +63,38 @@ See Table \ref{tbl-simple}.
 
 texreg(models, include.ci = FALSE, return.string = TRUE,
        caption = "What it is about",
-       label = "tbl-simple") |>
+       label = "tbl-simple",
+       float.pos= "h") |>
   write_lines("exports/table-1.txt")
 
 
 ```
 
-
 \input{"exports/table-1.txt"} 
+
+
+
+## A  figure
+
+See @fig-1.
+
+```{r}
+#| include: false
+#| echo: false
+ 
+
+ggsave(plot = figure_1, "exports/fig-1.png", width = 8, height = 6)
+```
+
+
+```{r}
+#| label: fig-1
+#| fig-cap: "A sample figure: Information about this figure"
+#| echo: false
+#| out-width: "95%"
+#| 
+include_graphics("exports/fig-1.png")
+```
 
 
 
