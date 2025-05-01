@@ -6,6 +6,23 @@ format:
     embed-resources: true
 ---
 
+# 2025 Dates
+
+| Date     | Time    | Room     |
+|----------|---------|----------|
+| 2 May    | 9 - 12  | WZB B 002 |
+| 16 May   | 9 - 2   | WZB B 002 |
+| 30 May   | 9 - 2   | WZB B 002 |
+| 13 June  | 9 - 2   | WZB B 002 |
+| 27 June  | 9 - 2   | WZB B 002 |
+
+plus off cycle times scheduled off cycle
+
+# Student survey
+
+
+Please take a minute to complete this [short survey](https://cloud.wzb.eu/apps/forms/s/A2AsJyH2oEMXbfSijj9NZEAp)
+
 # Resources
 
 * [Intro slides](https://macartan.github.io/writing_seminar/intro_slides.html)
