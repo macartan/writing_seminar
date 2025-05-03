@@ -17,10 +17,17 @@ bibliography: assets/bib.bib
 
 
 
-```{r setup, include = FALSE}
+```{r setupp, include = FALSE}
 pacman::p_load(DeclareDesign,  knitr, plotly, tidyverse)
-load("saved/analysis.Rdata")
 theme_set(theme_bw())
+
+# Replicate
+# To be fully self contained you can uncomment below and run the analysis file from here:
+# knitr::purl("1_analysis.qmd",  "2_replication_code.R")
+# knitr::spin("2_replication_code.R")  
+
+load("saved/analysis.Rdata")
+
 ```
 
 # Overview

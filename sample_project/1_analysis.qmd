@@ -49,10 +49,6 @@ An alternative approach is to do the analysis inside the paper `.qmd` files, tho
 
 pacman::p_load(tidyverse, DeclareDesign, foreign, knitr)
 
-Ys <- c("videoLikep1r", "videoSharep1r", "videoBookmarkp1r", "videoCommentTickedp1r", "watch_percentage_", "skipped_video_")
-
-Y_labels <- c("Like", "Share", "Bookmark", "Comment", "Watch", "Skip")
-
 ```
 
 

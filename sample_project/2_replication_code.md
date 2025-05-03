@@ -3,7 +3,7 @@
 
 ---
 title: "Replication code for 'Paper title'"
-date: "09 April 2025"
+date: "03 May 2025"
 author: Your name
 ---
 
@@ -20,26 +20,27 @@ knitr::spin("2_replication_code.R")
 ## Set up
 
 
+::: {.cell}
 
-``` r
+```{.r .cell-code}
 pacman::p_load(tidyverse, DeclareDesign, foreign, knitr)
-
-Ys <- c("videoLikep1r", "videoSharep1r", "videoBookmarkp1r", "videoCommentTickedp1r", "watch_percentage_", "skipped_video_")
-
-Y_labels <- c("Like", "Share", "Bookmark", "Comment", "Watch", "Skip")
 ```
+:::
+::: {.cell}
 
-``` r
+```{.r .cell-code}
 # fabricate(N = 100, X = rnorm(N), W = rnorm(N), Y = X + rnorm(N)) |> write.csv("assets/my_data.csv")
 
 df <- read.csv("assets/my_data.csv")
 ```
+:::
 
 
 # Figure (title that will appear on replication material)
 
+::: {.cell}
 
-``` r
+```{.r .cell-code}
 figure_1 <-
   df |> 
   ggplot(aes(Y, X)) +
@@ -49,13 +50,16 @@ figure_1 <-
 figure_1  
 ```
 
-![A caption](figure/figure-1.png)
+::: {.cell-output-display}
+![A caption](3_presentation_files/figure-revealjs/figure-1.png){width=960}
+:::
+:::
 
 
 # Table (title that will appear on replication material)
 
 
-``` r
+```{.r .cell-code}
 models <-
 list(
 `this one` = lm_robust(Y ~ X, data = df),
@@ -133,8 +137,7 @@ models |>
 </tr>
 </tfoot>
 </table>
+::: {.cell}
 
-``` r
-save.image("saved/analysis.Rdata")
-```
+:::
 
